@@ -8,7 +8,7 @@ const page = () => {
       <form className="flex flex-col w-full gap-4 px-4 py-10 mx-auto mt-5 bg-white rounded shadow-lg">
         <div className="">
           <label
-            htmlFor="text"
+            htmlhtmlFor="text"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Link
@@ -24,7 +24,7 @@ const page = () => {
 
         <div>
         <label
-          htmlFor="countries"
+          htmlhtmlFor="countries"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
           Select your country
@@ -40,7 +40,7 @@ const page = () => {
 
         <div>
         <label
-          htmlFor="countries"
+          htmlhtmlFor="countries"
           className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
         >
           Select your country
