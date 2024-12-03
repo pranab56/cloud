@@ -1,9 +1,17 @@
-'use client';
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdContentCopy, MdDelete, MdArrowDownward, MdArrowUpward } from "react-icons/md";
+import useSWR from 'swr';
 
 const ActiveLinksTable = () => {
-  const [links] = useState([
+  
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortConfig, setSortConfig] = useState({ key: "id", direction: "ascending" });
+  const itemsPerPage = 5;
+
+  // Fetch Data from API
+  const links = useState([
     { id: 1, siteName: "Mega Bad Comments", link: "https://example.com", time: "1 day ago" },
     { id: 2, siteName: "Mega Bad Comments", link: "https://example.com", time: "2 days ago" },
     { id: 3, siteName: "Mega Bad Comments", link: "https://example.com", time: "3 days ago" },
@@ -15,9 +23,12 @@ const ActiveLinksTable = () => {
     { id: 9, siteName: "Mega Bad Comments", link: "https://example.com", time: "9 days ago" },
     { id: 10, siteName: "Mega Bad Comments", link: "https://example.com", time: "10 days ago" },
   ]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'ascending' });
-  const itemsPerPage = 5;
+
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+  const { data, error, isLoading } = useSWR('/api/addLink', fetcher,{ refreshInterval: 50 });
+
+
+
 
   // Calculate Pagination
   const totalPages = Math.ceil(links.length / itemsPerPage);
@@ -31,27 +42,55 @@ const ActiveLinksTable = () => {
   };
 
   const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
+    let direction = "ascending";
+    if (sortConfig.key === key && sortConfig.direction === "ascending") {
+      direction = "descending";
     }
     setSortConfig({ key, direction });
 
     const sortedLinks = [...links].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
+      if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
+      if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
       return 0;
     });
 
-    // Update the links to the sorted order
-    links.splice(0, links.length, ...sortedLinks); // mutate the state to trigger a re-render
+    setLinks(sortedLinks);
   };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert(`Copied: ${text}`);
+      alert("Link copied to clipboard!");
     });
   };
+
+  const deleteLink = async (id) => {
+    try {
+      const response = await fetch("/api/addLink", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete the link");
+      }
+  
+      const data = await response.json();
+      alert(data.message);
+  
+    } catch (error) {
+      console.error("Error deleting link:", error);
+    }
+   
+  };
+
+  
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error loading data: {error.message}</p>;
 
   return (
     <div className="p-4">
@@ -61,65 +100,57 @@ const ActiveLinksTable = () => {
         <table className="min-w-full border border-collapse border-gray-300 rounded-lg">
           <thead>
             <tr className="text-left bg-gray-100">
-              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort('id')}>
-               
-               <span className="flex items-center justify-between">
-               ID
-               {sortConfig.key === 'id' && (sortConfig.direction === 'ascending' ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
-               </span>
-              </th>
-              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort('siteName')}>
-                
+              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("id")}>
                 <span className="flex items-center justify-between">
-                Sitename
-                {sortConfig.key === 'siteName' && (sortConfig.direction === 'ascending' ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
+                  ID
+                  {sortConfig.key === "id" && (sortConfig.direction === "ascending" ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
                 </span>
-                
+              </th>
+              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("siteName")}>
+                <span className="flex items-center justify-between">
+                  Site Name
+                  {sortConfig.key === "siteName" && (sortConfig.direction === "ascending" ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
+                </span>
               </th>
               <th className="px-4 py-2 border border-gray-300">Link</th>
-              <th className="px-4 py-2 text-center border border-gray-300">
-                Copy
-              </th>
-              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort('time')}>
-              
-                
+              <th className="px-4 py-2 text-center border border-gray-300">Copy</th>
+              <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("time")}>
                 <span className="flex items-center justify-between">
-                Time
-                {sortConfig.key === 'time' && (sortConfig.direction === 'ascending' ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
+                  Time
+                  {sortConfig.key === "time" && (sortConfig.direction === "ascending" ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
                 </span>
               </th>
-              <th className="px-4 py-2 text-center border border-gray-300">
-                Delete
-              </th>
+              <th className="px-4 py-2 text-center border border-gray-300">Delete</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((link, index) => (
+            {data?.map((link, index) => (
               <tr
-                key={link.id}
-                className={`${
-                  index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                } hover:bg-gray-200 transition-colors`}
+                key={index}
+                className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}
               >
-                <td className="px-4 py-2 border border-gray-300">{link.id}</td>
-                <td className="px-4 py-2 border border-gray-300">{link.siteName}</td>
+                <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
+                <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
                 <td className="px-4 py-2 border border-gray-300">
-                  <a href={link.link} className="text-blue-500 underline">
-                    {link.link}
+                  <a href={link.siteLink+link.link} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
+                    {link.siteLink+link.link}
                   </a>
                 </td>
                 <td className="px-4 py-2 text-center border border-gray-300">
                   <button
-                    onClick={() => copyToClipboard(link.link)}
+                    onClick={() => copyToClipboard(link.siteLink)}
                     className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
                   >
                     <MdContentCopy size={18} />
                   </button>
                 </td>
-                <td className="px-4 py-2 border border-gray-300">{link.time}</td>
+                <td className="px-4 py-2 border border-gray-300">
+                  {formatDistanceToNow(new Date(link.createdAt), { addSuffix: true })}
+                  
+                </td>
                 <td className="px-4 py-2 text-center border border-gray-300">
                   <button
-                    onClick={() => alert(`Deleted ID: ${link.id}`)}
+                    onClick={() => deleteLink(link._id)}
                     className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
                   >
                     <MdDelete size={18} />
@@ -161,9 +192,7 @@ const ActiveLinksTable = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           className={`${
-            currentPage === totalPages
-              ? "cursor-not-allowed bg-gray-200"
-              : "bg-blue-500 hover:bg-blue-600"
+            currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
           } text-white px-3 py-2 rounded`}
           disabled={currentPage === totalPages}
         >

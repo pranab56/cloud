@@ -1,8 +1,8 @@
 'use client';
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard ,MdLogout } from "react-icons/md";
 import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
 import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
@@ -27,6 +27,27 @@ export default function Sidebar({ children }) {
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
+
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+  
+      if (response.ok) {
+        // Clear local user state or perform any additional cleanup
+        console.log('Logout successful');
+        router.push('/'); // Redirect to login page
+      } else {
+        console.error('Failed to log out');
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
 
   return (
     <div onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} className="flex">
@@ -95,6 +116,17 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Create Link</span>
                 </h3>
               </Link>
+              <Link onClick={handleLogout} href="">
+                <h3
+                  className={`flex items-center p-2 rounded-lg ${
+                    isActive("/home/logout") ? "bg-green-500 text-white" : "text-white"
+                  } dark:text-white hover:text-black hover:bg-white dark:hover:bg-gray-700 group`}
+                >
+                  <span className="text-xl"><MdLogout /></span>
+                  <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Log Out</span>
+                </h3>
+              </Link>
+
             </li>
           </ul>
         </div>
