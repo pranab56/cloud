@@ -15,7 +15,7 @@ const ActiveLinksTable = () => {
     key: "id",
     direction: "ascending",
   });
-  const [loginUser,setLoginUser] = useState(localStorage.getItem('login_user'));
+  const [loginUser,setLoginUser] = useState(null);
   const [websiteList,setWebsiteList] = useState([])
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
@@ -25,9 +25,12 @@ const ActiveLinksTable = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const user = localStorage.getItem('login_user');
-      setLoginUser(user);
+      if (user) {
+        setLoginUser(user); // Parse stored user JSON
+      }
     }
   }, []);
+  
 
 
   useEffect(() => {
@@ -42,10 +45,13 @@ const ActiveLinksTable = () => {
     refreshInterval: 50,
   });
 
-  useEffect(()=>{
-    const filter = data?.filter(value=>value?.email === loginUser)
-    setWebsiteList(filter)
-  },[data])
+  useEffect(() => {
+    if (!loginUser || !data) return;
+  
+    const filter = data.filter(value => value.email === loginUser); // Access email property
+    setWebsiteList(filter);
+  }, [data, loginUser]);
+  
 
 
 
@@ -211,9 +217,14 @@ const ActiveLinksTable = () => {
                   <td className="px-4 py-2 border border-gray-300">{startIndex + index + 1}</td>
                   <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                    <a href={`${link.siteLink}${link.link}?email=${loginUser}`.split("@gmail.com")[0]} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                      {link.siteLink + link.link }
-                    </a>
+                  <a
+  href={`${link.siteLink}${link.link}?email=${loginUser || ""}`.split("@gmail.com")[0]}
+  className="text-blue-500 underline"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  {link.siteLink + link.link}
+</a>
                   </td>
                   <td className="px-4 py-2 text-center border border-gray-300">
                     <button onClick={() => copyToClipboard(link.siteLink)} className="p-2 text-white bg-green-500 rounded hover:bg-green-600">

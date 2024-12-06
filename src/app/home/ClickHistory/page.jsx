@@ -18,9 +18,13 @@ const ActiveLinksTable = () => {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const user = localStorage.getItem('login_user');
-      setLoginUser(user);
+      if (user) {
+        setLoginUser(user); // Parse stored user JSON
+      }
     }
   }, []);
+
+  console.log(loginUser)
 
 
   useEffect(() => {
@@ -36,10 +40,13 @@ const ActiveLinksTable = () => {
   const { data, error, isLoading } = useSWR("/api/get-visit-counts", fetcher, {
     refreshInterval: 50,
   });
-  useEffect(()=>{
-    const filter = data?.filter(value=>value?.email === loginUser)
-    setClickHistory(filter)
-  },[data])
+  useEffect(() => {
+    if (!loginUser || !data) return;
+  
+    const filter = data.filter(value => value.email === loginUser); // Access email property
+    setClickHistory(filter);
+  }, [data, loginUser]);
+
 
   if (isLoading) return <Loader />;
   if (error) return <p>Error loading data: {error.message}</p>;

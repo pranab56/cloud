@@ -5,33 +5,37 @@ import { toast } from "react-hot-toast";
 import { isLoggedIn } from "@/app/utils/auth";
 
 const Page = () => {
-  
-  
-  const [loginUser,setLoginUser] = useState(localStorage.getItem('login_user'))
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem('login_user');
-      setLoginUser(user);
-    }
-  }, []);
-  const router = useRouter();
- 
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [loginUser]);
-
+  const [loginUser, setLoginUser] = useState(null); // State for storing the logged-in user
   const [formData, setFormData] = useState({
     link: "",
     siteLink: "https://cloud-sub-pranab56s-projects.vercel.app/",
     siteReview: "Mega Review",
-    email:loginUser
+    email: "", // Initially empty, will be set dynamically
   });
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  
+  // Fetch the user from localStorage
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem("login_user");
+      if (user) {
+        setLoginUser(user);
+        setFormData((prevData) => ({
+          ...prevData,
+          email: user, // Update email in formData
+        }));
+      }
+    }
+  }, []);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -50,7 +54,7 @@ const Page = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Form data with the email included
         credentials: "include",
       });
 
@@ -65,6 +69,7 @@ const Page = () => {
         link: "",
         siteLink: "https://cloud-sub-pranab56s-projects.vercel.app/",
         siteReview: "Mega Review",
+        email: loginUser, // Reset email to current loginUser
       });
     } catch (error) {
       toast.error(error.message || "Something went wrong!");
