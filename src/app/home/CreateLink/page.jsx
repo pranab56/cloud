@@ -89,6 +89,7 @@ const Page = () => {
   return (
     <section className="p-4">
       <h3 className="text-2xl font-normal text-gray-800">Add New Link</h3>
+      
       <form
         className="flex flex-col w-full gap-4 px-4 py-6 mx-auto mt-5 bg-white rounded shadow-lg"
         onSubmit={handleSubmit}

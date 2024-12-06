@@ -88,9 +88,6 @@ const ActiveLinksTable = () => {
     }
   };
 
-  if (isLoading) {
-    return <Loader />; // Show a loader while data is being fetched
-  }
 
   if (error) {
     return <div>Error fetching data</div>; // Handle error
@@ -100,76 +97,91 @@ const ActiveLinksTable = () => {
     <div className="p-4">
       <h3 className="pb-10 text-2xl font-normal text-gray-800">Active Links</h3>
       <div className="overflow-x-auto rounded shadow-lg">
-        <table className="min-w-full border border-collapse border-gray-300 rounded-lg">
-          <thead>
-            <tr className="text-left bg-gray-100">
-              <th
-                className="px-4 py-2 border border-gray-300"
-                onClick={() => handleSort("id")}
-              >
-                <span className="flex items-center justify-between">
-                  ID
-                  
-                </span>
-              </th>
-              <th
-                className="px-4 py-2 border border-gray-300"
-                onClick={() => handleSort("siteName")}
-              >
-                <span className="flex items-center justify-between">
-                  Active Domain
-                 
-                </span>
-              </th>
-              <th className="px-4 py-2 text-center border border-gray-300">
-                Mobile
-              </th>
-              <th className="px-4 py-2 text-center border border-gray-300">
-                Desktop
-              </th>
-              <th className="px-4 py-2 text-center border border-gray-300">
-                Tablet
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {ClickHistory.length === 0 ? (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="px-4 py-2 font-normal text-center text-gray-800 text-md"
-                >
-                  No Data Available
-                </td>
-              </tr>
-            ) : (
-              currentItems.map((link, index) => (
-                <tr
-                  key={index}
-                  className={`${
-                    index % 2 === 0 ? "bg-gray-100" : "bg-white"
-                  } hover:bg-gray-200 transition-colors`}
-                >
-                  <td className="px-4 py-2 border border-gray-300">
-                    {startIndex + index + 1}
-                  </td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    {link?.domain?.split("?")[0]}
-                  </td>
-                  <td className="px-4 py-2 text-center border border-gray-300">
-                    {link.deviceCounts?.mobile || 0}
-                  </td>
-                  <td className="px-4 py-2 text-center border border-gray-300">
-                    {link.deviceCounts?.desktop || 0}
-                  </td>
-                  <td className="px-4 py-2 text-center border border-gray-300">
-                    {link.deviceCounts?.tablet || 0}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+      <table className="min-w-full border border-collapse border-gray-300 rounded-lg">
+  <thead>
+    <tr className="text-left bg-gray-100">
+      <th
+        className="px-4 py-2 border border-gray-300"
+        onClick={() => handleSort("id")}
+      >
+        <span className="flex items-center justify-between">
+          ID
+        </span>
+      </th>
+      <th
+        className="px-4 py-2 border border-gray-300"
+        onClick={() => handleSort("siteName")}
+      >
+        <span className="flex items-center justify-between">
+          Active Domain
+        </span>
+      </th>
+      <th className="px-4 py-2 text-center border border-gray-300">Mobile</th>
+      <th className="px-4 py-2 text-center border border-gray-300">Desktop</th>
+      <th className="px-4 py-2 text-center border border-gray-300">Tablet</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {isLoading ? (
+      // Skeleton Loader for loading state
+      Array.from({ length: 5 }).map((_, index) => (
+        <tr key={index} className="animate-pulse">
+          <td className="px-4 py-2 border border-gray-300">
+            <div className="w-10 h-4 bg-gray-300 rounded"></div>
+          </td>
+          <td className="px-4 py-2 border border-gray-300">
+            <div className="h-4 bg-gray-300 rounded w-28"></div>
+          </td>
+          <td className="px-4 py-2 border border-gray-300">
+            <div className="w-48 h-4 bg-gray-300 rounded"></div>
+          </td>
+          <td className="px-4 py-2 text-center border border-gray-300">
+            <div className="w-12 h-4 mx-auto bg-gray-300 rounded"></div>
+          </td>
+          <td className="px-4 py-2 border border-gray-300">
+            <div className="w-20 h-4 bg-gray-300 rounded"></div>
+          </td>
+        </tr>
+      ))
+    ) : ClickHistory.length === 0 ? (
+      <tr>
+        <td
+          colSpan="5"
+          className="px-4 py-2 font-normal text-center text-gray-800 text-md"
+        >
+          No Data Available
+        </td>
+      </tr>
+    ) : (
+      currentItems.map((link, index) => (
+        <tr
+          key={index}
+          className={`${
+            index % 2 === 0 ? "bg-gray-100" : "bg-white"
+          } hover:bg-gray-200 transition-colors`}
+        >
+          <td className="px-4 py-2 border border-gray-300">
+            {startIndex + index + 1}
+          </td>
+          <td className="px-4 py-2 border border-gray-300">
+            {link?.domain?.split("?")[0]}
+          </td>
+          <td className="px-4 py-2 text-center border border-gray-300">
+            {link.deviceCounts?.mobile || 0}
+          </td>
+          <td className="px-4 py-2 text-center border border-gray-300">
+            {link.deviceCounts?.desktop || 0}
+          </td>
+          <td className="px-4 py-2 text-center border border-gray-300">
+            {link.deviceCounts?.tablet || 0}
+          </td>
+        </tr>
+      ))
+    )}
+  </tbody>
+</table>
+
       </div>
       {/* Pagination */}
       {ClickHistory.length > 0 && (

