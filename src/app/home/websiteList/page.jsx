@@ -217,19 +217,27 @@ const ActiveLinksTable = () => {
                   <td className="px-4 py-2 border border-gray-300">{startIndex + index + 1}</td>
                   <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                  <a
-  href={`${link.siteLink}${link.link}?email=${loginUser || ""}`.split("@gmail.com")[0]}
-  className="text-blue-500 underline"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  {link.siteLink + link.link}
-</a>
+                                  <a
+                  href={`${link.siteLink}${link.link}?email=${loginUser || ""}`.split("@gmail.com")[0]}
+                  className="text-blue-500 underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.siteLink + link.link}
+                </a>
                   </td>
                   <td className="px-4 py-2 text-center border border-gray-300">
-                    <button onClick={() => copyToClipboard(link.siteLink)} className="p-2 text-white bg-green-500 rounded hover:bg-green-600">
-                      <MdContentCopy size={18} />
-                    </button>
+                  <button
+                    onClick={() => {
+                      const email = loginUser ? loginUser.split("@gmail.com")[0] : "";
+                      const url = `${link.siteLink}${link.link}?email=${email}`;
+                      copyToClipboard(url);
+                    }}
+                    className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
+                  >
+                    <MdContentCopy size={18} />
+                  </button>
+
                   </td>
                   <td className="px-4 py-2 border border-gray-300">
                     {formatDistanceToNow(new Date(link.createdAt), { addSuffix: true })}

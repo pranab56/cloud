@@ -2,7 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import axios from "axios"; // Import axios for data fetching
 import { isLoggedIn } from "@/app/utils/auth";
+
+// Loader component
+const Loader = () => (
+  <div className="flex items-center justify-center">
+    <div className="inline-block w-8 h-8 border-4 border-blue-600 border-solid rounded-full spinner-border animate-spin" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
 
 const Page = () => {
   const [loginUser, setLoginUser] = useState(null); // State for storing the logged-in user
@@ -36,6 +46,7 @@ const Page = () => {
     }
   }, []);
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -44,35 +55,32 @@ const Page = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const response = await fetch("/api/addLink", {
-        method: "POST",
+      const response = await axios.post("/api/addLink", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Form data with the email included
-        credentials: "include",
+        withCredentials: true, // Send cookies with the request
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add the link");
+      if (response.status === 200) {
+        toast.success(response.data.message || "Link added successfully!");
+        setFormData({
+          link: "",
+          siteLink: "https://cloud-sub-pranab56s-projects.vercel.app/",
+          siteReview: "Mega Review",
+          email: loginUser, // Reset email to current loginUser
+        });
+      } else {
+        toast.error("Failed to add the link");
       }
-
-      const data = await response.json();
-      toast.success(data.message || "Link added successfully!");
-      setFormData({
-        link: "",
-        siteLink: "https://cloud-sub-pranab56s-projects.vercel.app/",
-        siteReview: "Mega Review",
-        email: loginUser, // Reset email to current loginUser
-      });
     } catch (error) {
-      toast.error(error.message || "Something went wrong!");
+      toast.error(error.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -137,7 +145,7 @@ const Page = () => {
           disabled={loading}
           className="text-white w-[150px] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded text-sm px-2 py-2.5 text-center"
         >
-          {loading ? "Generating..." : "Generate Link"}
+          {loading ? <Loader /> : "Generate Link"}
         </button>
       </form>
     </section>
