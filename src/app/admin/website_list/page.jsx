@@ -12,7 +12,7 @@ const ActiveLinksTable = () => {
   const [currentPage, setCurrentPage] = useState(1);  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
-  const loginUser = localStorage.getItem('login_user')
+    const [loginUser,setLoginUser ] = useState(null);
   const itemsPerPage = 10;
 
   // Fetch Data from API
@@ -20,6 +20,21 @@ const ActiveLinksTable = () => {
   const { data, error, isLoading } = useSWR("/api/addLink", fetcher, {
     refreshInterval: 50,
   });
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
 
 
   if (isLoading) return <Loader />;

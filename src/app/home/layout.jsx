@@ -11,7 +11,7 @@ import useSWR from 'swr';
 export default function Sidebar({ children }) {
   const pathname = usePathname();
   const isActive = (route) => pathname === route;
-  const loginUser = localStorage.getItem('login_user');
+  const [loginUser,setLoginUser] = useState(null);
   const [userName ,setUserName ] = useState(null)
 
   const [isCollapsed, setIsCollapsed] = useState(false); 
@@ -26,6 +26,20 @@ export default function Sidebar({ children }) {
       setSidebarWidth(newWidth);
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data:name, isLoading:loadingName } = useSWR("/api/auth/signup", fetcher, {

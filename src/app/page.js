@@ -31,8 +31,6 @@ const Page = () => {
       } else {
         // Login successful, redirect to the home page
         const data = await response.json();
-        console.log(data)
-        // router.push("/home");
         localStorage.setItem("login_user", formData?.email);
 
         if (data?.user?.role === "admin") {
