@@ -2,7 +2,11 @@ import clientPromise from "@/lib/mongodb";
 
 export async function POST(req) {
   try {
+<<<<<<< HEAD
     const { email, password, name , role } = await req.json();
+=======
+    const { email, password, name } = await req.json();
+>>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
 
     // Basic validation
     if (!email || !password || !name) {
@@ -31,7 +35,10 @@ export async function POST(req) {
       email,
       password,
       name,
+<<<<<<< HEAD
       role,
+=======
+>>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
       createdAt: new Date(),
     };
 
@@ -51,6 +58,7 @@ export async function POST(req) {
     );
   }
 }
+<<<<<<< HEAD
 
 
 
@@ -83,3 +91,5 @@ export async function GET() {
     );
   }
 }
+=======
+>>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
