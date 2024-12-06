@@ -8,10 +8,7 @@ const Page = () => {
     name: '',
     email: '',
     password: '',
-<<<<<<< HEAD
     role:'user',
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
     rePassword: '',
   });
   const [error, setError] = useState('');
@@ -41,10 +38,7 @@ const Page = () => {
           email: formData.email,
           password: formData.password,
           name: formData.name,
-<<<<<<< HEAD
           role:formData.role
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
         }),
       });
   
