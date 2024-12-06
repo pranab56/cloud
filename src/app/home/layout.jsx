@@ -7,6 +7,7 @@ import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
 import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
 import useSWR from 'swr';
+import { isLoggedIn } from '../utils/auth';
 
 export default function Sidebar({ children }) {
   const pathname = usePathname();
