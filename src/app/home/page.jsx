@@ -28,10 +28,11 @@ const ActiveLinksTable = () => {
   const [userName ,setUserName ] = useState(null)
 
   useEffect(() => {
-    const user = localStorage.getItem('login_user');
-    setLoginUser(user)
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
+    }
   }, []);
-
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR("/api/mega_login", fetcher, {
