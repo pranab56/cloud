@@ -2,10 +2,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
 const Page = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -20,11 +16,7 @@ const Page = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-<<<<<<< HEAD
     setLoading(true); 
-=======
-    setLoading(true); // Set loading to true when form is submitted
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -38,7 +30,6 @@ const Page = () => {
         setError(errorData.message || "Invalid email or password");
       } else {
         // Login successful, redirect to the home page
-<<<<<<< HEAD
         const data = await response.json();
         // router.push("/home");
         localStorage.setItem("login_user", formData?.email);
@@ -56,30 +47,20 @@ const Page = () => {
       
 
       
-=======
-        router.push("/home");
-      }
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false); // Reset loading state
     }
-<<<<<<< HEAD
 
     
 
 
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
   };
 
   return (
     <div className="bg-[#e9ecef] h-screen flex items-center justify-center">
-<<<<<<< HEAD
         
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
       <form
         className="flex flex-col w-3/12 p-5 bg-white"
         onSubmit={handleSubmit}
