@@ -99,21 +99,7 @@ const ActiveLinksTable = () => {
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
 
-    const sortedLinks = [...reversedData].sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'ascending' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'ascending' ? 1 : -1;
-      return 0;
-    });
-
-    reversedData.splice(0, reversedData.length, ...sortedLinks);
-  };
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {

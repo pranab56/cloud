@@ -12,7 +12,7 @@ import { isLoggedIn } from '../utils/auth';
 export default function Sidebar({ children }) {
   const pathname = usePathname();
   const isActive = (route) => pathname === route;
-  const [loginUser,setLoginUser] = useState(null);
+  
   const [userName ,setUserName ] = useState(null)
 
   const [isCollapsed, setIsCollapsed] = useState(false); 
@@ -28,12 +28,17 @@ export default function Sidebar({ children }) {
     }
   };
 
+  const initialUser = typeof window !== "undefined" ? localStorage.getItem("login_user") : null;
+  const [loginUser,setLoginUser] = useState(initialUser);
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem('login_user');
-      setLoginUser(user);
+    if (!loginUser) {
+      const loggedInUser = localStorage.getItem("login_user");
+      if (loggedInUser) {
+        setLoginUser(loggedInUser); // Update state if not already set
+      }
     }
-  }, []);
+  }, [loginUser]);
+
 
 
   useEffect(() => {
@@ -105,7 +110,7 @@ export default function Sidebar({ children }) {
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home") ? "bg-green-500 text-white" : "text-white"
-                  } dark:text-white hover:text-black hover:bg-white dark:hover:bg-gray-700 group`}
+                  } dark:text-white hover:text-black hover:bg-white transition-colors dark:hover:bg-gray-700 group`}
                 >
                   <span className="text-xl">
                     <MdDashboard />

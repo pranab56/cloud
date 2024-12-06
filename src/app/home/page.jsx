@@ -13,14 +13,24 @@ import { isLoggedIn } from "../utils/auth";
 const ActiveLinksTable = () => {
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortConfig, setSortConfig] = useState({ key: "id", direction: "ascending" });
   const [loading, setLoading] = useState(true);
   const [userDetails, setUserDetails] = useState([]);
-  const [loginUser, setLoginUser] = useState(null);
   const [userName, setUserName] = useState(null);
   const [deviceCounts, setDeviceCounts] = useState({ mobile: 0, desktop: 0, tablet: 0, total: 0 });
-
   const itemsPerPage = 5;
+
+  const initialUser = typeof window !== "undefined" ? localStorage.getItem("login_user") : null;
+  const [user, setUser] = useState(initialUser);
+  useEffect(() => {
+    if (!user) {
+      const loggedInUser = localStorage.getItem("login_user");
+      if (loggedInUser) {
+        setUser(loggedInUser); // Update state if not already set
+      }
+    }
+  }, [user]);
+
+ 
 
   // Fetching data with Axios
   const fetchData = async () => {
@@ -31,11 +41,10 @@ const ActiveLinksTable = () => {
         axios.get("/api/auth/signup"),
         axios.get("/api/get-visit-counts"),
       ]);
-
-      const user = localStorage.getItem("login_user");
       const loginData = loginDataRes.data?.data || [];
       const signupData = signupDataRes.data || [];
       const countsData = countsRes.data || [];
+      
 
       const filteredLoginData = loginData.filter((value) => value?.logEmail === user);
       setUserDetails(filteredLoginData);
@@ -74,18 +83,7 @@ const ActiveLinksTable = () => {
     }
   };
 
-  const handleSort = (key) => {
-    const direction = sortConfig.key === key && sortConfig.direction === "ascending" ? "descending" : "ascending";
-    setSortConfig({ key, direction });
-
-    const sortedData = [...userDetails].sort((a, b) => {
-      if (a[key] < b[key]) return direction === "ascending" ? -1 : 1;
-      if (a[key] > b[key]) return direction === "ascending" ? 1 : -1;
-      return 0;
-    });
-
-    setUserDetails(sortedData);
-  };
+ 
 
   const copyToClipboard = (value) => {
     navigator.clipboard.writeText(value).then(() => {
