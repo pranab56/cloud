@@ -1,6 +1,6 @@
+
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
-import { serialize } from 'cookie'; 
 
 export async function POST(req) {
   try {
@@ -35,7 +35,6 @@ export async function POST(req) {
         { status: 401 }
       );
     }
-<<<<<<< HEAD
 
     return NextResponse.json({
       message: "Login successful",
@@ -46,21 +45,6 @@ export async function POST(req) {
       },
     });
 
-=======
-    const sessionToken = 'JhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSIsInVzZXJuYW1lIjoiam9obiIsImlhdCI6MTY4NzA0ODgxNiwiZXhwIjoxNjg3MDU0NDE2fQ.XuS6G_93T_0wvzUlZ-0ffvnwH5xwpxUV5GT8VrtZt5Y'; // Replace this with actual token logic
-
-    // Set the token in the cookies (this could be a JWT for real-world apps)
-    const response = NextResponse.json({ message: "Login successful" });
-    response.cookies.set('authToken', sessionToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production', // Secure cookies in production
-      maxAge: 60 * 60 * 24, // Expires in 1 day
-    });
-
-    return response;
-
-
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
   } catch (error) {
     console.error('Error during login:', error);
     return new Response(

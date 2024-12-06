@@ -31,31 +31,23 @@ const Page = () => {
       } else {
         // Login successful, redirect to the home page
         const data = await response.json();
+        console.log(data)
         // router.push("/home");
         localStorage.setItem("login_user", formData?.email);
 
         if (data?.user?.role === "admin") {
           router.push("/admin");
-        } else if (data.user.role === "user") {
+        } else if (data?.user?.role === "user") {
           router.push("/home");
         } else {
           setError("Invalid role assigned");
         }
-      }
-
-
-      
-
-      
+      }      
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false); // Reset loading state
     }
-
-    
-
-
   };
 
   return (

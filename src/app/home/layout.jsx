@@ -1,50 +1,32 @@
 'use client';
-<<<<<<< HEAD
 import { useEffect, useState } from 'react';
-=======
-import { useState } from 'react';
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
 import { usePathname, useRouter } from 'next/navigation';
 import Link from "next/link";
 import { MdDashboard ,MdLogout } from "react-icons/md";
 import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
 import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
-<<<<<<< HEAD
 import useSWR from 'swr';
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
 
 export default function Sidebar({ children }) {
   const pathname = usePathname();
   const isActive = (route) => pathname === route;
-<<<<<<< HEAD
   const loginUser = localStorage.getItem('login_user');
   const [userName ,setUserName ] = useState(null)
 
   const [isCollapsed, setIsCollapsed] = useState(false); 
   const [sidebarWidth, setSidebarWidth] = useState(256); 
-=======
-
-  const [isCollapsed, setIsCollapsed] = useState(false); // Sidebar collapsed state
-  const [sidebarWidth, setSidebarWidth] = useState(256); // Initial width of sidebar
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
   const [isDragging, setIsDragging] = useState(false);
 
   const handleMouseDown = () => setIsDragging(true);
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseMove = (e) => {
     if (isDragging) {
-<<<<<<< HEAD
       const newWidth = Math.max(200, Math.min(e.clientX, 400));
-=======
-      const newWidth = Math.max(200, Math.min(e.clientX, 400)); // Restrict width between 200px and 400px
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
       setSidebarWidth(newWidth);
     }
   };
 
-<<<<<<< HEAD
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data:name, isLoading:loadingName } = useSWR("/api/auth/signup", fetcher, {
     refreshInterval: 50,
@@ -57,8 +39,6 @@ export default function Sidebar({ children }) {
 
 
 
-=======
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
@@ -72,14 +52,8 @@ export default function Sidebar({ children }) {
       });
   
       if (response.ok) {
-<<<<<<< HEAD
         localStorage.removeItem('login_user')
         router.push('/');
-=======
-        // Clear local user state or perform any additional cleanup
-        console.log('Logout successful');
-        router.push('/'); // Redirect to login page
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
       } else {
         console.error('Failed to log out');
       }
@@ -108,11 +82,7 @@ export default function Sidebar({ children }) {
             </li> 
             <li>
               <h3 className={`py-5 pl-2 text-xl text-white border-b text-start ${isCollapsed ? 'hidden' : ''}`}>
-<<<<<<< HEAD
               {userName?.name}
-=======
-              {`Pronab`}
->>>>>>> 697fd6d2c2994a37ee3f1d5a2782723dd91b4376
               </h3>
             </li>
             <li className='mt-3'>
