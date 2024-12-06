@@ -104,35 +104,21 @@ const ActiveLinksTable = () => {
           <thead>
             <tr className="text-left bg-gray-100">
               <th
-                className="px-4 py-2 border border-gray-300 cursor-pointer"
+                className="px-4 py-2 border border-gray-300"
                 onClick={() => handleSort("id")}
               >
                 <span className="flex items-center justify-between">
                   ID
-                  <span className="flex justify-center w-5">
-                    {sortConfig.key === "id" &&
-                      (sortConfig.direction === "ascending" ? (
-                        <MdArrowUpward size={20} />
-                      ) : (
-                        <MdArrowDownward size={20} />
-                      ))}
-                  </span>
+                  
                 </span>
               </th>
               <th
-                className="px-4 py-2 border border-gray-300 cursor-pointer"
+                className="px-4 py-2 border border-gray-300"
                 onClick={() => handleSort("siteName")}
               >
                 <span className="flex items-center justify-between">
                   Active Domain
-                  <span className="flex justify-center w-5">
-                    {sortConfig.key === "siteName" &&
-                      (sortConfig.direction === "ascending" ? (
-                        <MdArrowUpward size={20} />
-                      ) : (
-                        <MdArrowDownward size={20} />
-                      ))}
-                  </span>
+                 
                 </span>
               </th>
               <th className="px-4 py-2 text-center border border-gray-300">

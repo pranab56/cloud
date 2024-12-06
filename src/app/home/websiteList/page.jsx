@@ -160,29 +160,13 @@ const ActiveLinksTable = () => {
                 <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("id")}>
                   <span className="flex items-center justify-between">
                     ID
-                    <span className="flex justify-center w-5">
-                      {sortConfig.key === "id" && (
-                        sortConfig.direction === "ascending" ? (
-                          <MdArrowUpward size={20} />
-                        ) : (
-                          <MdArrowDownward size={20} />
-                        )
-                      )}
-                    </span>
+                    
                   </span>
                 </th>
                 <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("siteName")}>
                   <span className="flex items-center justify-between">
                     Site Name
-                    <span className="flex justify-center w-5">
-                      {sortConfig.key === "siteName" && (
-                        sortConfig.direction === "ascending" ? (
-                          <MdArrowUpward size={20} />
-                        ) : (
-                          <MdArrowDownward size={20} />
-                        )
-                      )}
-                    </span>
+                    
                   </span>
                 </th>
                 <th className="px-4 py-2 border border-gray-300">Link</th>
@@ -190,15 +174,7 @@ const ActiveLinksTable = () => {
                 <th className="px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("time")}>
                   <span className="flex items-center justify-between">
                     Time
-                    <span className="flex justify-center w-5">
-                      {sortConfig.key === "time" && (
-                        sortConfig.direction === "ascending" ? (
-                          <MdArrowUpward size={20} />
-                        ) : (
-                          <MdArrowDownward size={20} />
-                        )
-                      )}
-                    </span>
+                    
                   </span>
                 </th>
                 <th className="px-4 py-2 text-center border border-gray-300">Delete</th>

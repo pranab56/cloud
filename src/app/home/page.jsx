@@ -148,8 +148,7 @@ const ActiveLinksTable = () => {
                 >
                   <span className="flex items-center justify-between">
                     {title}
-                    {sortConfig.key === title.toLowerCase() &&
-                      (sortConfig.direction === "ascending" ? <MdArrowUpward size={20} /> : <MdArrowDownward size={20} />)}
+                  
                   </span>
                 </th>
               ))}
