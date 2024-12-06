@@ -15,7 +15,7 @@ const ActiveLinksTable = () => {
     key: "id",
     direction: "ascending",
   });
-  const [loginUser,setLoginUser] = useState(null);
+  const [loginUser,setLoginUser] = useState(localStorage.getItem('login_user'));
   const [websiteList,setWebsiteList] = useState([])
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
