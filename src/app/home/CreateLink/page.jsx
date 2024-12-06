@@ -7,7 +7,7 @@ import { isLoggedIn } from "@/app/utils/auth";
 const Page = () => {
   
   
-  const loginUser = localStorage.getItem('login_user')
+  const [loginUser,setLoginUser] = useState(null)
   const [formData, setFormData] = useState({
     link: "",
     siteLink: "https://cloud-sub-pranab56s-projects.vercel.app/",
@@ -17,10 +17,18 @@ const Page = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");  // Redirect to login if not logged in
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
     }
   }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
   
   const handleChange = (e) => {
     const { name, value } = e.target;

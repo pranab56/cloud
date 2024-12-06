@@ -8,18 +8,26 @@ import { useRouter } from "next/navigation";
 
 const ActiveLinksTable = () => {
   const router = useRouter()
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/"); 
-    }
-  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({
     key: "id",  // Default column to sort by
     direction: "ascending",
   });
   const itemsPerPage = 10;
-  const loginUser = localStorage.getItem('login_user')
+  const [loginUser,setLoginUser] = useState(null);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
 
   const [ClickHistory,setClickHistory] = useState([])
 

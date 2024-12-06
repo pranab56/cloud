@@ -14,11 +14,7 @@ import { isLoggedIn } from "../utils/auth";
 const ActiveLinksTable = () => {
 
   const router = useRouter()
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");  // Redirect to login if not logged in
-    }
-  }, []);
+  
  
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'ascending' });
@@ -33,6 +29,13 @@ const ActiveLinksTable = () => {
       setLoginUser(user);
     }
   }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR("/api/mega_login", fetcher, {

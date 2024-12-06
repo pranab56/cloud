@@ -10,21 +10,31 @@ import { useRouter } from "next/navigation";
 
 const ActiveLinksTable = () => {
   const router = useRouter()
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");  // Redirect to login if not logged in
-    }
-  }, []);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({
     key: "id",
     direction: "ascending",
   });
+  const [loginUser,setLoginUser] = useState(null);
   const [websiteList,setWebsiteList] = useState([])
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
-  const loginUser = localStorage.getItem('login_user')
+  
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const user = localStorage.getItem('login_user');
+      setLoginUser(user);
+    }
+  }, []);
+
+
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, [loginUser]);
 
   // Fetch Data from API
   const fetcher = (url) => fetch(url).then((res) => res.json());
