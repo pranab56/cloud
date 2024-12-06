@@ -24,8 +24,14 @@ const ActiveLinksTable = () => {
   const [sortConfig, setSortConfig] = useState({ key: 'id', direction: 'ascending' });
   const [loading, setLoading] = useState(true);
   const [userDetails , setUserDetails ] = useState([]);
-  const loginUser = localStorage.getItem('login_user');
+  const [loginUser,setLoginUser] = useState(null)
   const [userName ,setUserName ] = useState(null)
+
+  useEffect(() => {
+    const user = localStorage.getItem('login_user');
+    setLoginUser(user)
+  }, []);
+
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR("/api/mega_login", fetcher, {
@@ -35,8 +41,6 @@ const ActiveLinksTable = () => {
   const { data:name, isLoading:loadingName } = useSWR("/api/auth/signup", fetcher, {
     refreshInterval: 50,
   });
-
-  
 
   
 
