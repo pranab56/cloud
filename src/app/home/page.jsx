@@ -93,7 +93,7 @@ const ActiveLinksTable = () => {
     });
   };
 
-  if (loading) return <Loader />;
+  // if (loading) return <Loader />;
 
   const totalPages = Math.ceil(userDetails?.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
