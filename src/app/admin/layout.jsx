@@ -7,10 +7,8 @@ import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
 import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
 import useSWR from 'swr';
-import { useAuthRedirect } from '../utils/auth';
 
 export default function Sidebar({ children }) {
-  useAuthRedirect();
   const pathname = usePathname();
   const isActive = (route) => pathname === route;
   const [loginUser,setLoginUser] = useState(null);

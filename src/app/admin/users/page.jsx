@@ -10,32 +10,32 @@ const AdminDashboard = () => {
   const [modalType, setModalType] = useState(""); // "role", "delete", or "edit"
   const [selectedUser, setSelectedUser] = useState(null);
   const [updatedUserData, setUpdatedUserData] = useState({
-    id:"",
+    id: "",
     name: "",
     email: "",
     password: "",
   });
 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
 
-const togglePasswordVisibility = () => {
-  setPasswordVisible((prev) => !prev);
-};
+  const togglePasswordVisibility = () => {
+    setPasswordVisible((prev) => !prev);
+  };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-const [currentPage, setCurrentPage] = useState(1); 
-const itemsPerPage = 10;
+  const reversedData = [...users].reverse();
+  const totalPages = Math.ceil(reversedData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentItems = reversedData.slice(startIndex, startIndex + itemsPerPage);
 
-const reversedData = [...users].reverse();
-const totalPages = Math.ceil(reversedData.length / itemsPerPage);
-const startIndex = (currentPage - 1) * itemsPerPage;
-const currentItems = reversedData.slice(startIndex, startIndex + itemsPerPage);
-
-const handlePageChange = (page) => {
-  if (page >= 1 && page <= totalPages) {
-    setCurrentPage(page);
-  }
-};
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -52,6 +52,8 @@ const handlePageChange = (page) => {
       }
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
+      setLoading(false); // Set loading to false after data is fetched
     }
   };
 
@@ -75,7 +77,6 @@ const handlePageChange = (page) => {
     setSelectedUser(user);
     openModal("delete");
   };
-
 
   const confirmRoleChange = async () => {
     if (!selectedUser) return;
@@ -137,52 +138,45 @@ const handlePageChange = (page) => {
     }
   };
 
-  
   const handleEdit = (user) => {
     setSelectedUser(user);
     setUpdatedUserData({
-      id:user._id,
+      id: user._id,
       name: user.name,
       email: user.email,
       password: user.password, // This assumes you're storing raw passwords, which isn't secure.
     });
     openModal("edit");
   };
-  
 
   const updateUserDetails = async () => {
-    if ( !updatedUserData.name || !updatedUserData.email || !updatedUserData.password) {
-        alert("All fields are required!");
-        return;
+    if (!updatedUserData.name || !updatedUserData.email || !updatedUserData.password) {
+      alert("All fields are required!");
+      return;
     }
 
     console.log("Updated User Data:", updatedUserData);
 
     try {
-        const response = await fetch("/api/auth/editUser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedUserData),
-        });
+      const response = await fetch("/api/auth/editUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUserData),
+      });
 
-        const data = await response.json();
-        console.log("Response Data:", data);
+      const data = await response.json();
+      console.log("Response Data:", data);
 
-        if (response.ok) {
-            fetchUsers(); // Re-fetch the list of users after updating
-            closeModal(); // Close the modal after successful update
-        } else {
-            alert(`Error: ${data.message}`);
-        }
+      if (response.ok) {
+        fetchUsers(); // Re-fetch the list of users after updating
+        closeModal(); // Close the modal after successful update
+      } else {
+        alert(`Error: ${data.message}`);
+      }
     } catch (error) {
-        console.error("Error updating user details:", error);
+      console.error("Error updating user details:", error);
     }
-};
-
-
-  
-  
-  
+  };
 
   return (
     <div className="p-4">
@@ -200,89 +194,99 @@ const handlePageChange = (page) => {
           </tr>
         </thead>
         <tbody>
-          {currentItems.map((user, index) => (
-            <tr key={user._id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}>
-              <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.name}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.email}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.password}</td>
-              <td className="px-4 py-2 border border-gray-300">
-                <select
-                  value={user.role}
-                  onChange={(e) => handleRoleChange({ ...user, role: e.target.value })}
-                  className="px-2 py-1 border rounded"
-                >
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                </select>
+          {loading ? (
+            // Skeleton loader when loading is true
+            <tr>
+              <td colSpan="7" className="px-4 py-2 border border-gray-300">
+                <div className="space-y-4 animate-pulse">
+                  <div className="w-1/2 h-4 bg-gray-300 rounded"></div>
+                  <div className="w-1/4 h-4 bg-gray-300 rounded"></div>
+                  <div className="w-1/3 h-4 bg-gray-300 rounded"></div>
+                </div>
               </td>
-              
-
-              <td className="px-4 py-2 text-center border border-gray-300">
-                    <button
-                      onClick={() => handleEdit(user)}
-                      className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
-                    >
-                      <FaEdit size={18} />
-                    </button>
-                  </td>
-
-              
-
-
-              <td className="px-4 py-2 text-center border border-gray-300">
-                    <button
-                      onClick={() => handleDelete(user)} 
-                      className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
-                    >
-                      <MdDelete size={18} />
-                    </button>
-                  </td>
-
-
             </tr>
-          ))}
+          ) : (
+            currentItems.map((user, index) => (
+              <tr
+                key={user._id}
+                className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}
+              >
+                <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
+                <td className="px-4 py-2 border border-gray-300">{user.name}</td>
+                <td className="px-4 py-2 border border-gray-300">{user.email}</td>
+                <td className="px-4 py-2 border border-gray-300">{user.password}</td>
+                <td className="px-4 py-2 border border-gray-300">
+                  <select
+                    value={user.role}
+                    onChange={(e) => handleRoleChange({ ...user, role: e.target.value })}
+                    className="px-2 py-1 border rounded"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                  </select>
+                </td>
+                <td className="px-4 py-2 text-center border border-gray-300">
+                  <button
+                    onClick={() => handleEdit(user)}
+                    className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
+                  >
+                    <FaEdit size={18} />
+                  </button>
+                </td>
+                <td className="px-4 py-2 text-center border border-gray-300">
+                  <button
+                    onClick={() => handleDelete(user)}
+                    className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
+                  >
+                    <MdDelete size={18} />
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       {/* Pagination */}
       {currentItems && currentItems.length === 0 ? (
-          <p className="text-xl font-semibold text-center text-gray-500 "></p>
-        ) :  <div className="flex items-center gap-4 mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          className={`${
-            currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-3 py-2 rounded`}
-          disabled={currentPage === 1}
-        >
-          <MdKeyboardArrowLeft />
-        </button>
+        <p className="text-xl font-semibold text-center text-gray-500"></p>
+      ) : (
+        <div className="flex items-center gap-4 mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={`${
+              currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-3 py-2 rounded`}
+            disabled={currentPage === 1}
+          >
+            <MdKeyboardArrowLeft />
+          </button>
 
-        <div className="flex gap-2">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={`${
-                currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-              } px-4 py-1 rounded`}
-            >
-              {index + 1}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`${
+                  currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                } px-4 py-1 rounded`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className={`${
+              currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-3 py-2 rounded`}
+            disabled={currentPage === totalPages}
+          >
+            <MdKeyboardArrowRight />
+          </button>
         </div>
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          className={`${
-            currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-3 py-2 rounded`}
-          disabled={currentPage === totalPages}
-        >
-          <MdKeyboardArrowRight />
-        </button>
-      </div>}
+      )}
 
       {/* Modal */}
       {isModalOpen && (
@@ -322,31 +326,28 @@ const handlePageChange = (page) => {
                   />
                 </div>
                 <div className="mb-4">
-                <label className="block text-sm">Password</label>
-                     <div className="relative">
+                  <label className="block text-sm">Password</label>
+                  <div className="relative">
                     <input
-                    type={passwordVisible ? "text" : "password"} // Toggle between text and password types
-                    value={updatedUserData.password}
-                    onChange={(e) => setUpdatedUserData({ ...updatedUserData, password: e.target.value })}
-                    className="w-full px-2 py-1 border rounded"
+                      type={passwordVisible ? "text" : "password"} // Toggle between text and password types
+                      value={updatedUserData.password}
+                      onChange={(e) => setUpdatedUserData({ ...updatedUserData, password: e.target.value })}
+                      className="w-full px-2 py-1 border rounded"
                     />
                     <button
-                    type="button"
-                    onClick={togglePasswordVisibility}
-                    className="absolute text-gray-600 transform -translate-y-1/2 right-2 top-1/2"
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute text-gray-600 transform -translate-y-1/2 right-2 top-1/2"
                     >
-                    {passwordVisible ? "Hide" : "Show"} {/* Button text */}
-                </button>
-            </div>
-            </div>
+                      {passwordVisible ? "Hide" : "Show"} {/* Button text */}
+                    </button>
+                  </div>
+                </div>
               </>
             )}
 
             <div className="flex justify-end gap-3">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
+              <button onClick={closeModal} className="px-4 py-2 bg-gray-300 rounded">
                 Cancel
               </button>
               {modalType === "role" && (
@@ -370,7 +371,7 @@ const handlePageChange = (page) => {
                   onClick={updateUserDetails}
                   className="px-4 py-2 text-white bg-green-600 rounded"
                 >
-                  Update
+                  Save Changes
                 </button>
               )}
             </div>
