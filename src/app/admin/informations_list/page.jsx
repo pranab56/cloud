@@ -2,10 +2,11 @@
 
 import Loader from "@/components/Loader";
 import { format } from "date-fns";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import useSWR, { mutate } from "swr";
+
 const AdminDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -19,7 +20,56 @@ const AdminDashboard = () => {
   });
 
   if (isLoading || isDeleting) {
-    return <Loader />; // Show loader while fetching or deleting
+    return (
+      <div className="p-4">
+        <h1 className="mb-4 text-xl font-bold">Admin Dashboard</h1>
+        {/* Skeleton loader for table rows */}
+        <table className="w-full border border-collapse border-gray-300 table-auto">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="px-4 py-2 border border-gray-300 text-start">SL</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Dashboard User</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Email</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Password</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Ip</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Agent</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Url</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Date</th>
+              <th className="px-4 py-2 border border-gray-300">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(itemsPerPage)].map((_, index) => (
+              <tr key={index} className="animate-pulse">
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 bg-gray-300 border border-gray-300"></td>
+                <td className="px-4 py-2 text-center bg-gray-300 border border-gray-300"></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Skeleton loader for pagination */}
+        <div className="flex items-center gap-4 mt-4 animate-pulse">
+          <div className="w-12 h-6 bg-gray-300"></div>
+          <div className="flex gap-2">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="w-8 h-6 bg-gray-300 rounded"
+              ></div>
+            ))}
+          </div>
+          <div className="w-12 h-6 bg-gray-300"></div>
+        </div>
+      </div>
+    );
   }
 
   // Pagination logic
@@ -117,7 +167,7 @@ const AdminDashboard = () => {
 
       {/* Pagination */}
       {currentItems && currentItems.length === 0 ? (
-        <p className="text-xl font-semibold text-center text-gray-500"></p>
+        <p className="text-xl font-semibold text-center text-gray-500">No data available</p>
       ) : (
         <div className="flex items-center gap-4 mt-4">
           <button

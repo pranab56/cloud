@@ -20,10 +20,23 @@ const Page = () => {
 
   // Redirect to login if not logged in
 
-
-  // Show loader if data is still loading
+  // Show skeleton loader if data is still loading
   if (usersLoading || informationLoading) {
-    return <Loader />;
+    return (
+      <section className="flex p-[20px] items-center justify-between gap-5">
+        {titles.map((title, index) => (
+          <div className="w-full" key={index}>
+            <div className={`flex justify-between rounded-md bg-gray-300 animate-pulse`}>
+              <div className="flex flex-col w-full gap-1">
+                <div className="w-3/4 h-8 bg-gray-400 rounded-md"></div> {/* Skeleton for count */}
+                <div className="w-1/2 h-4 mt-2 bg-gray-400 rounded-md"></div> {/* Skeleton for title */}
+                <div className="w-full h-10 mt-2 bg-gray-400 rounded-md"></div> {/* Skeleton for button */}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+    );
   }
 
   // Handle errors from SWR

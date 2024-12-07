@@ -9,7 +9,7 @@ const ActiveLinksTable = () => {
   const [currentPage, setCurrentPage] = useState(1);  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [linkToDelete, setLinkToDelete] = useState(null);
-    const [loginUser,setLoginUser ] = useState(null);
+  const [loginUser, setLoginUser] = useState(null);
   const itemsPerPage = 10;
 
   // Fetch Data from API
@@ -18,7 +18,6 @@ const ActiveLinksTable = () => {
     refreshInterval: 50,
   });
 
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const user = localStorage.getItem('login_user');
@@ -26,12 +25,48 @@ const ActiveLinksTable = () => {
     }
   }, []);
 
+  if (isLoading) return (
+    <div className="p-4">
+      <h3 className="pb-10 text-2xl font-normal text-gray-800">Active Links</h3>
+      <div className="overflow-x-auto rounded shadow-lg">
+        <table className="w-full border border-collapse border-gray-300 table-auto">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="px-4 py-2 border border-gray-300 text-start">SL</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Name</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Url</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Login Url</th>
+              <th className="px-4 py-2 border border-gray-300">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Skeleton loading */}
+            {[...Array(10)].map((_, index) => (
+              <tr key={index} className="animate-pulse">
+              <td className="px-4 py-2 border border-gray-300">
+                <div className="w-10 h-4 bg-gray-300 rounded"></div>
+              </td>
+              <td className="px-4 py-2 border border-gray-300">
+                <div className="h-4 bg-gray-300 rounded w-28"></div>
+              </td>
+              <td className="px-4 py-2 border border-gray-300">
+                <div className="w-48 h-4 bg-gray-300 rounded"></div>
+              </td>
+              <td className="px-4 py-2 text-center border border-gray-300">
+                <div className="w-12 h-4 mx-auto bg-gray-300 rounded"></div>
+              </td>
+              <td className="px-4 py-2 border border-gray-300">
+                <div className="w-20 h-4 bg-gray-300 rounded"></div>
+              </td>
+            </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 
-
-  if (isLoading) return <Loader />;
   if (error) return <p>Error loading data: {error.message}</p>;
-
- 
 
   const reversedData = [...data].reverse();
   const totalPages = Math.ceil(reversedData.length / itemsPerPage);
@@ -71,42 +106,34 @@ const ActiveLinksTable = () => {
       {/* Table */}
       <h3 className="pb-10 text-2xl font-normal text-gray-800">Active Links</h3>
       <div className="overflow-x-auto rounded shadow-lg">
-        
-
-
-      <table className="w-full border border-collapse border-gray-300 table-auto">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="px-4 py-2 border border-gray-300 text-start">SL</th>
-            <th className="px-4 py-2 border border-gray-300 text-start">Website Name</th>
-            <th className="px-4 py-2 border border-gray-300 text-start">Website Url</th>
-            <th className="px-4 py-2 border border-gray-300 text-start">Website Login Url</th>
-            <th className="px-4 py-2 border border-gray-300">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-        {currentItems && currentItems.length === 0 ? (
-    <tr>
-      <td colSpan="5" className="px-4 py-2 font-normal text-center text-gray-800 text-md">
-        No Data Available
-      </td>
-    </tr>
-  ) :
-              (currentItems?.map((link, index) => (
+        <table className="w-full border border-collapse border-gray-300 table-auto">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="px-4 py-2 border border-gray-300 text-start">SL</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Name</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Url</th>
+              <th className="px-4 py-2 border border-gray-300 text-start">Website Login Url</th>
+              <th className="px-4 py-2 border border-gray-300">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems && currentItems.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="px-4 py-2 font-normal text-center text-gray-800 text-md">
+                  No Data Available
+                </td>
+              </tr>
+            ) : (
+              currentItems?.map((link, index) => (
                 <tr key={index} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}>
                   <td className="px-4 py-2 border border-gray-300">{startIndex + index + 1}</td>
                   <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
-                  <td className="px-4 py-2 border border-gray-300">
-                    
-                      {link.siteLink }
-                    
-                  </td>
+                  <td className="px-4 py-2 border border-gray-300">{link.siteLink}</td>
                   <td className="px-4 py-2 border border-gray-300">
                     <a href={`${link.siteLink}${link.link}?email=${loginUser}`.split("@gmail.com")[0]} className="text-blue-500 underline" target="_blank" rel="noopener noreferrer">
-                      {link.siteLink + link.link }
+                      {link.siteLink + link.link}
                     </a>
                   </td>
-                  
                   <td className="px-4 py-2 text-center border border-gray-300">
                     <button
                       onClick={() => {
@@ -121,51 +148,50 @@ const ActiveLinksTable = () => {
                 </tr>
               ))
             )}
-        </tbody>
-      </table>
-          
-         
-        
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination */}
       {currentItems && currentItems.length === 0 ? (
-          <p className="text-xl font-semibold text-center text-gray-500 "></p>
-        ) :  <div className="flex items-center gap-4 mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          className={`${
-            currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-3 py-2 rounded`}
-          disabled={currentPage === 1}
-        >
-          <MdKeyboardArrowLeft />
-        </button>
+        <p className="text-xl font-semibold text-center text-gray-500 "></p>
+      ) : (
+        <div className="flex items-center gap-4 mt-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            className={`${
+              currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-3 py-2 rounded`}
+            disabled={currentPage === 1}
+          >
+            <MdKeyboardArrowLeft />
+          </button>
 
-        <div className="flex gap-2">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              className={`${
-                currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-              } px-4 py-1 rounded`}
-            >
-              {index + 1}
-            </button>
-          ))}
+          <div className="flex gap-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index}
+                onClick={() => handlePageChange(index + 1)}
+                className={`${
+                  currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+                } px-4 py-1 rounded`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className={`${
+              currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-3 py-2 rounded`}
+            disabled={currentPage === totalPages}
+          >
+            <MdKeyboardArrowRight />
+          </button>
         </div>
-
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          className={`${
-            currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-3 py-2 rounded`}
-          disabled={currentPage === totalPages}
-        >
-          <MdKeyboardArrowRight />
-        </button>
-      </div>}
+      )}
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
@@ -193,7 +219,6 @@ const ActiveLinksTable = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
