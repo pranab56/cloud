@@ -14,7 +14,7 @@ const Page = () => {
   const { data: information, isLoading: informationLoading, error: informationError } = useSWR("/api/information_list", fetcher, { refreshInterval: 1000 });
 
   // Default counts
-  const Website = 3;
+  const Website = 1;
   const counts = [users?.length || 0, Website, information?.length || 0];
   const titles = ["Users", "Website", "Informations"];
 
