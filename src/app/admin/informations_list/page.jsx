@@ -121,7 +121,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-xl font-bold">Admin Dashboard</h1>
+      <h1 className="mb-4 text-2xl font-normal">Information List</h1>
       <table className="w-full border border-collapse border-gray-300 table-auto">
         <thead>
           <tr className="bg-gray-200">
