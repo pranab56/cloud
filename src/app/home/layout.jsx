@@ -98,7 +98,7 @@ export default function Sidebar({ children }) {
               </h3>
             </li>
             <li className='mt-3'>
-              <Link href="/home">
+              <Link href="/home" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home") ? "bg-green-500 text-white" : "text-white"
@@ -112,7 +112,7 @@ export default function Sidebar({ children }) {
               </Link>
             </li>
             <li className="flex flex-col gap-1">
-              <Link href="/home/websiteList">
+              <Link href="/home/websiteList" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home/websiteList") ? "bg-green-500 text-white" : "text-white"
@@ -122,7 +122,7 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Website List</span>
                 </h3>
               </Link>
-              <Link href="/home/ClickHistory">
+              <Link href="/home/ClickHistory" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home/ClickHistory") ? "bg-green-500 text-white" : "text-white"
@@ -132,7 +132,7 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Click History</span>
                 </h3>
               </Link>
-              <Link href="/home/CreateLink">
+              <Link href="/home/CreateLink" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home/CreateLink") ? "bg-green-500 text-white" : "text-white"
@@ -142,7 +142,7 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Create Link</span>
                 </h3>
               </Link>
-              <Link onClick={handleLogout} href="">
+              <Link onClick={handleLogout} href="" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/home/logout") ? "bg-green-500 text-white" : "text-white"

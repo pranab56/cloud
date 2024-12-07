@@ -95,7 +95,7 @@ export default function Sidebar({ children }) {
               </h3>
             </li>
             <li className='mt-3'>
-              <Link href="/admin">
+              <Link href="/admin" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/admin") ? "bg-green-500 text-white" : "text-white"
@@ -109,7 +109,7 @@ export default function Sidebar({ children }) {
               </Link>
             </li>
             <li className='mt-3'>
-              <Link href="/admin/users">
+              <Link href="/admin/users" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/admin/users") ? "bg-green-500 text-white" : "text-white"
@@ -123,7 +123,7 @@ export default function Sidebar({ children }) {
               </Link>
             </li>
             <li className="flex flex-col gap-1">
-              <Link href="/admin/add_user">
+              <Link href="/admin/add_user" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/admin/add_user") ? "bg-green-500 text-white" : "text-white"
@@ -133,7 +133,7 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Add User</span>
                 </h3>
               </Link>
-              <Link href="/admin/website_list">
+              <Link href="/admin/website_list" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/admin/website_list") ? "bg-green-500 text-white" : "text-white"
@@ -143,7 +143,7 @@ export default function Sidebar({ children }) {
                   <span className={`ms-3 ${isCollapsed ? 'hidden' : ''}`}>Website List</span>
                 </h3>
               </Link>
-              <Link href="/admin/informations_list">
+              <Link href="/admin/informations_list" prefetch={true}>
                 <h3
                   className={`flex items-center p-2 rounded-lg ${
                     isActive("/admin/informations_list") ? "bg-green-500 text-white" : "text-white"
