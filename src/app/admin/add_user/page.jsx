@@ -1,16 +1,8 @@
 'use client';
-import { isLoggedIn } from "@/app/utils/auth";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 
 const Page = () => {
-  const router = useRouter();
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, []);
   const [formData, setFormData] = useState({
     name: "",
     email: "",

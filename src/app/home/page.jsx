@@ -7,11 +7,15 @@ import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { isLoggedIn } from "../utils/auth";
+import { isLoggedIn, useAuthRedirect } from "../utils/auth";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
+
 const ActiveLinksTable = () => {
+ useAuthRedirect();
+
+  
   const router = useRouter();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -29,11 +33,7 @@ const ActiveLinksTable = () => {
   }, [user]);
 
 
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [user]);
+ 
 
 
   // SWR data fetching

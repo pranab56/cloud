@@ -1,13 +1,12 @@
 "use client";
 import Loader from '@/components/Loader';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
 import useSWR from 'swr';
-import { isLoggedIn } from '../utils/auth';
+import { useAuthRedirect } from '../utils/auth';
 
 const Page = () => {
-  const router = useRouter();
+  useAuthRedirect();
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
   // Fetching data with SWR
@@ -20,11 +19,7 @@ const Page = () => {
   const titles = ["Users", "Website", "Informations"];
 
   // Redirect to login if not logged in
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [router]);
+
 
   // Show loader if data is still loading
   if (usersLoading || informationLoading) {

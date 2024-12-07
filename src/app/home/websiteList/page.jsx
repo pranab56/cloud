@@ -3,13 +3,9 @@ import { useState, useEffect } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdContentCopy, MdDelete, MdArrowDownward, MdArrowUpward } from "react-icons/md";
 import useSWR from 'swr';
-import { Toaster, toast } from 'react-hot-toast';
-import Loader from "@/components/Loader";
-import { isLoggedIn } from "@/app/utils/auth";
-import { useRouter } from "next/navigation";
+import { toast } from 'react-hot-toast';
 
 const ActiveLinksTable = () => {
-  const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({
     key: "id",
@@ -31,14 +27,6 @@ const ActiveLinksTable = () => {
     }
   }, []);
   
-
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [loginUser]);
-
   // Fetch Data from API
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data, error, isLoading } = useSWR("/api/addLink", fetcher, {
@@ -52,11 +40,6 @@ const ActiveLinksTable = () => {
     setWebsiteList(filter);
   }, [data, loginUser]);
   
-
-
-
-
-
   // if (isLoading) return <Loader />;
   if (error) return <p>Error loading data: {error.message}</p>;
 
@@ -99,17 +82,11 @@ const ActiveLinksTable = () => {
     }
   };
 
-
-
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text).then(() => {
       toast.success("Link copied to clipboard!");
     });
   };
-
-
-
- 
 
   const deleteLink = async () => {
     try {

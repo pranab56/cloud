@@ -7,9 +7,10 @@ import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
 import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
 import useSWR from 'swr';
-import { isLoggedIn } from '../utils/auth';
+import { isLoggedIn, useAuthRedirect } from '../utils/auth';
 
 export default function Sidebar({ children }) {
+  useAuthRedirect();
   const pathname = usePathname();
   const isActive = (route) => pathname === route;
   
@@ -39,13 +40,6 @@ export default function Sidebar({ children }) {
     }
   }, [loginUser]);
 
-
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [loginUser]);
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
   const { data:name, isLoading:loadingName } = useSWR("/api/auth/signup", fetcher, {

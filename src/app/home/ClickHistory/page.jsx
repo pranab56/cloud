@@ -4,12 +4,9 @@ import useSWR from "swr"; // Import useSWR
 import {
   MdKeyboardArrowRight,
   MdKeyboardArrowLeft,
-  MdArrowDownward,
-  MdArrowUpward,
 } from "react-icons/md";
-import Loader from "@/components/Loader"; // Assuming you have a loader component
-import { isLoggedIn } from "@/app/utils/auth";
 import { useRouter } from "next/navigation";
+import { isLoggedIn } from "@/app/utils/auth";
 
 // Create a fetcher function for SWR
 const fetcher = (url) => fetch(url).then((res) => res.json());

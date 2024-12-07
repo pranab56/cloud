@@ -1,9 +1,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import axios from "axios"; // Import axios for data fetching
-import { isLoggedIn } from "@/app/utils/auth";
 
 // Loader component
 const Loader = () => (
@@ -23,7 +21,6 @@ const Page = () => {
     email: "", // Initially empty, will be set dynamically
   });
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   // Fetch the user from localStorage
   useEffect(() => {
@@ -39,12 +36,6 @@ const Page = () => {
     }
   }, []);
 
-  // Redirect if not logged in
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, []);
 
   // Handle input changes
   const handleChange = (e) => {

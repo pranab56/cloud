@@ -1,12 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { formatDistanceToNow } from "date-fns";
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdContentCopy, MdDelete, MdArrowDownward, MdArrowUpward } from "react-icons/md";
+import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdDelete } from "react-icons/md";
 import useSWR from 'swr';
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 import Loader from "@/components/Loader";
-import { isLoggedIn } from "@/app/utils/auth";
-import { useRouter } from "next/navigation";
 
 const ActiveLinksTable = () => {
   const [currentPage, setCurrentPage] = useState(1);  
@@ -29,12 +26,6 @@ const ActiveLinksTable = () => {
     }
   }, []);
 
-
-  useEffect(() => {
-    if (!isLoggedIn()) {
-      router.push("/");
-    }
-  }, [loginUser]);
 
 
   if (isLoading) return <Loader />;
