@@ -1,10 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 
 const AdminDashboard = () => {
+  const router = useRouter();
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    } else {
+      fetchData();
+    }
+  }, []);
   const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); // "role", "delete", or "edit"
