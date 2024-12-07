@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
       />
         <title>Cloud</title>
         <meta name="description" content="Welcome Our Cloud project" />
-        <meta name="keywords" content="next.js, fast, SEO, Google ranking" />
+        <meta name="keywords" content="next.js,cloud,cloud-nine,cloud project fast, SEO, Google ranking" />
       </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
