@@ -1,5 +1,6 @@
 "use client";
 
+import { isLoggedIn } from "@/app/utils/auth";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
