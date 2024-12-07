@@ -8,8 +8,6 @@ const Page = () => {
   useEffect(() => {
     if (!isLoggedIn()) {
       router.push("/");
-    } else {
-      fetchData();
     }
   }, []);
   const [formData, setFormData] = useState({

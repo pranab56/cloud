@@ -12,8 +12,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!isLoggedIn()) {
       router.push("/");
-    } else {
-      fetchData();
     }
   }, []);
   const [currentPage, setCurrentPage] = useState(1);

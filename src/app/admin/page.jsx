@@ -1,10 +1,12 @@
 "use client";
 import Loader from '@/components/Loader';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FaRegArrowAltCircleRight } from 'react-icons/fa';
 import useSWR from 'swr';
 
 const page = () => {
+  const router = useRouter();
     const fetcher = (url) => fetch(url).then((res) => res.json());
     const { data:users, isLoading:usersLoading } = useSWR("/api/auth/signup", fetcher, {refreshInterval: 1000});
     const { data:information, isLoading:informationLoading } = useSWR("/api/information_list", fetcher, {refreshInterval: 1000});
@@ -15,6 +17,12 @@ const page = () => {
     if (usersLoading || informationLoading) {
         return <Loader />; // Show loader while fetching or deleting
       }
+      
+  useEffect(() => {
+    if (!isLoggedIn()) {
+      router.push("/");
+    }
+  }, []);
     return (
         <section className="flex p-[20px] items-center justify-between gap-5">
         {titles.map((title, index) => (

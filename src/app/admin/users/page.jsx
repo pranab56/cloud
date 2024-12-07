@@ -10,8 +10,6 @@ const AdminDashboard = () => {
   useEffect(() => {
     if (!isLoggedIn()) {
       router.push("/");
-    } else {
-      fetchData();
     }
   }, []);
   const [users, setUsers] = useState([]);
