@@ -1,6 +1,10 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-static"; // for static pages
+export const revalidate = 60; // to specify revalidation interval
+
+
 export async function POST(req) {
   try {
     const { email, role } = await req.json();

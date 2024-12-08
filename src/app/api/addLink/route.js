@@ -7,6 +7,11 @@ const client = new MongoClient(
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
+
+export const dynamic = "force-static"; // for static pages
+export const revalidate = 60; // to specify revalidation interval
+
+
 // Ensure the client is connected
 async function connectToDatabase() {
   if (!client.isConnected) {

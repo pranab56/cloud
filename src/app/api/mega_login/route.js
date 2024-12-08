@@ -3,6 +3,11 @@ import { MongoClient } from 'mongodb';
 const uri = 'mongodb+srv://cloud:AEl0OZPk34Yy8891@cluster0.q0opr.mongodb.net/';
 const client = new MongoClient(uri);
 
+// In your API route file (e.g., /app/api/mega_login/route.js)
+export const dynamic = "force-static"; // for static pages
+export const revalidate = 60; // to specify revalidation interval
+
+
 async function connectToDatabase() {
   if (!client.topology || !client.topology.isConnected()) {
     await client.connect();
