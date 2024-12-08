@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-<url><loc>https://cloudbd.vercel.app/forgot</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/login</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/signup</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/admin/add_user</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/admin</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/admin/informations_list</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/admin/users</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/admin/website_list</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/home/ChangePassword</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/home/ClickHistory</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/home/CreateLink</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/home</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/home/websiteList</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/api/get-visit-counts</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
-<url><loc>https://cloudbd.vercel.app/api/mega_login</loc><lastmod>2024-12-08T21:13:45.872Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/forgot</loc><lastmod>2024-12-08T21:49:08.496Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/login</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/signup</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/admin/add_user</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/admin/users</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/admin/informations_list</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/admin</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/admin/website_list</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/home/ChangePassword</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/home/ClickHistory</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/home/CreateLink</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/home</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/home/websiteList</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/api/mega_login</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
+<url><loc>https://cloudbd.vercel.app/api/get-visit-counts</loc><lastmod>2024-12-08T21:49:08.497Z</lastmod><changefreq>daily</changefreq><priority>0.7</priority></url>
 </urlset>

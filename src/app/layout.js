@@ -34,6 +34,7 @@ export default function RootLayout({ children }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
         <title>Cloud</title>
+        <meta name="google-site-verification" content="NzQwnFDQb9bghCJFHR4OwCR07T8HG5rRWlhIfjF31D4" />
         <meta name="description" content="Welcome Our Cloud project" />
         <meta name="keywords" content="next.js,cloud,cloud-nine,cloud project fast, SEO, Google ranking" />
       </Head>
