@@ -1,7 +1,6 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import Head from "next/head";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,27 +16,22 @@ const geistMono = localFont({
 export const metadata = {
   title: "Cloud",
   description: "Welcome Our Cloud project",
+  keywords: [
+    "next.js",
+    "cloud",
+    "cloud-nine",
+    "cloud project fast",
+    "SEO",
+    "Google ranking",
+  ],
+  verification: {
+    google: "NzQwnFDQb9bghCJFHR4OwCR07T8HG5rRWlhIfjF31D4",
+  },
 };
 
 export default function RootLayout({ children }) {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: "Cloud",
-    description: "Welcome Our Cloud project",
-  };
   return (
     <html lang="en">
-      <Head>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-        <title>Cloud</title>
-        <meta name="google-site-verification" content="NzQwnFDQb9bghCJFHR4OwCR07T8HG5rRWlhIfjF31D4" />
-        <meta name="description" content="Welcome Our Cloud project" />
-        <meta name="keywords" content="next.js,cloud,cloud-nine,cloud project fast, SEO, Google ranking" />
-      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
