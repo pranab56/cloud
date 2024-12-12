@@ -1,59 +1,57 @@
 "use client";
 
+import withAuth from "@/app/utils/auth";
 import { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import useSWR from "swr";
+
+// Fetcher function to handle API calls
+const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState(""); // "role", "delete", or "edit"
   const [selectedUser, setSelectedUser] = useState(null);
-  const [updatedUserData, setUpdatedUserData] = useState({
-    id: "",
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const [updatedUserData, setUpdatedUserData] = useState({ id: "", name: "", email: "", password: "" });
+  const { data: users, error, isLoading } = useSWR("/api/auth/signup", fetcher, { refreshInterval: 50 });
+
+  const [prevUsers, setPrevUsers] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
 
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
+
+  useEffect(() => {
+    if (users && prevUsers.length && users.length > prevUsers.length) {
+      const audio = new Audio("/sounds/notification.mp3"); // Add your sound file to the public folder
+      audio.play();
+      setShowPopup(true);
+      setTimeout(() => setShowPopup(false), 3000);
+    }
+    setPrevUsers(users || []);
+  }, [users]);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible((prev) => !prev);
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const reversedUsers = users ? [...users] : [];
+  const totalPages = reversedUsers.length ? Math.ceil(reversedUsers.length / itemsPerPage) : 0;
 
-  const reversedData = [...users].reverse();
-  const totalPages = Math.ceil(reversedData.length / itemsPerPage);
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages); // Adjust current page to the last page if out of bounds
+    }
+  }, [totalPages, currentPage]);
+
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentItems = reversedData.slice(startIndex, startIndex + itemsPerPage);
+  const currentItems = reversedUsers.slice(startIndex, startIndex + itemsPerPage);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("/api/auth/signup");
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data);
-      } else {
-        console.error("Failed to fetch users");
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false); // Set loading to false after data is fetched
     }
   };
 
@@ -80,25 +78,14 @@ const AdminDashboard = () => {
 
   const confirmRoleChange = async () => {
     if (!selectedUser) return;
-
     try {
       const response = await fetch("/api/auth/updateRole", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: selectedUser.email, role: selectedUser.role }),
       });
-
       if (response.ok) {
-        const data = await response.json();
-        console.log(data.message);
-
-        setUsers((prevUsers) =>
-          prevUsers.map((user) =>
-            user.email === selectedUser.email
-              ? { ...user, role: selectedUser.role }
-              : user
-          )
-        );
+        console.log("Role updated successfully");
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData.message);
@@ -112,21 +99,14 @@ const AdminDashboard = () => {
 
   const confirmDelete = async () => {
     if (!selectedUser) return;
-
     try {
       const response = await fetch("/api/auth/delete_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: selectedUser.email }),
       });
-
       if (response.ok) {
-        const data = await response.json();
-        console.log(data.message);
-
-        setUsers((prevUsers) =>
-          prevUsers.filter((user) => user.email !== selectedUser.email)
-        );
+        console.log("User deleted successfully");
       } else {
         const errorData = await response.json();
         console.error("Error:", errorData.message);
@@ -144,7 +124,7 @@ const AdminDashboard = () => {
       id: user._id,
       name: user.name,
       email: user.email,
-      password: user.password, // This assumes you're storing raw passwords, which isn't secure.
+      password: user.password, // It's important to never store plain passwords in a real app
     });
     openModal("edit");
   };
@@ -155,8 +135,6 @@ const AdminDashboard = () => {
       return;
     }
 
-    console.log("Updated User Data:", updatedUserData);
-
     try {
       const response = await fetch("/api/auth/editUser", {
         method: "POST",
@@ -165,10 +143,7 @@ const AdminDashboard = () => {
       });
 
       const data = await response.json();
-      console.log("Response Data:", data);
-
       if (response.ok) {
-        fetchUsers(); // Re-fetch the list of users after updating
         closeModal(); // Close the modal after successful update
       } else {
         alert(`Error: ${data.message}`);
@@ -181,6 +156,11 @@ const AdminDashboard = () => {
   return (
     <div className="p-4">
       <h1 className="mb-4 text-2xl font-normal">Users</h1>
+      {showPopup && (
+        <div className="fixed p-4 text-white bg-blue-500 rounded-lg shadow-lg top-4 right-4">
+          New user!
+        </div>
+      )}
       <table className="w-full border border-collapse border-gray-300 table-auto">
         <thead>
           <tr className="bg-gray-200">
@@ -194,8 +174,7 @@ const AdminDashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            // Skeleton loader when loading is true
+          {isLoading ? (
             <tr>
               <td colSpan="7" className="px-4 py-2 border border-gray-300">
                 <div className="space-y-4 animate-pulse">
@@ -207,11 +186,8 @@ const AdminDashboard = () => {
             </tr>
           ) : (
             currentItems.map((user, index) => (
-              <tr
-                key={user._id}
-                className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}
-              >
-                <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
+              <tr key={user._id} className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}>
+                <td className="px-4 py-2 border border-gray-300">{startIndex + index + 1}</td>
                 <td className="px-4 py-2 border border-gray-300">{user.name}</td>
                 <td className="px-4 py-2 border border-gray-300">{user.email}</td>
                 <td className="px-4 py-2 border border-gray-300">{user.password}</td>
@@ -234,12 +210,14 @@ const AdminDashboard = () => {
                   </button>
                 </td>
                 <td className="px-4 py-2 text-center border border-gray-300">
-                  <button
-                    onClick={() => handleDelete(user)}
-                    className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
-                  >
-                    <MdDelete size={18} />
-                  </button>
+                  {user.role === "user" && (
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
+                    >
+                      <MdDelete size={18} />
+                    </button>
+                  )}
                 </td>
               </tr>
             ))
@@ -248,15 +226,11 @@ const AdminDashboard = () => {
       </table>
 
       {/* Pagination */}
-      {currentItems && currentItems.length === 0 ? (
-        <p className="text-xl font-semibold text-center text-gray-500"></p>
-      ) : (
+      {currentItems.length > 0 && (
         <div className="flex items-center gap-4 mt-4">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            className={`${
-              currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-            } text-white px-3 py-2 rounded`}
+            className={`${currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"} text-white px-3 py-2 rounded`}
             disabled={currentPage === 1}
           >
             <MdKeyboardArrowLeft />
@@ -267,9 +241,7 @@ const AdminDashboard = () => {
               <button
                 key={index}
                 onClick={() => handlePageChange(index + 1)}
-                className={`${
-                  currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                } px-4 py-1 rounded`}
+                className={`${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"} px-4 py-1 rounded`}
               >
                 {index + 1}
               </button>
@@ -278,9 +250,7 @@ const AdminDashboard = () => {
 
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            className={`${
-              currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-            } text-white px-3 py-2 rounded`}
+            className={`${currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"} text-white px-3 py-2 rounded`}
             disabled={currentPage === totalPages}
           >
             <MdKeyboardArrowRight />
@@ -294,15 +264,12 @@ const AdminDashboard = () => {
           <div className="p-6 bg-white rounded shadow-lg w-96">
             {modalType === "role" && (
               <p className="mb-4">
-                Are you sure you want to change the role of{" "}
-                <strong>{selectedUser?.email}</strong> to{" "}
-                <strong>{selectedUser?.role}</strong>?
+                Are you sure you want to change the role of <strong>{selectedUser?.email}</strong> to <strong>{selectedUser?.role}</strong>?
               </p>
             )}
             {modalType === "delete" && (
               <p className="mb-4">
-                Are you sure you want to delete{" "}
-                <strong>{selectedUser?.email}</strong>?
+                Are you sure you want to delete <strong>{selectedUser?.email}</strong>?
               </p>
             )}
             {modalType === "edit" && (
@@ -329,7 +296,7 @@ const AdminDashboard = () => {
                   <label className="block text-sm">Password</label>
                   <div className="relative">
                     <input
-                      type={passwordVisible ? "text" : "password"} // Toggle between text and password types
+                      type={passwordVisible ? "text" : "password"}
                       value={updatedUserData.password}
                       onChange={(e) => setUpdatedUserData({ ...updatedUserData, password: e.target.value })}
                       className="w-full px-2 py-1 border rounded"
@@ -337,43 +304,27 @@ const AdminDashboard = () => {
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
-                      className="absolute text-gray-600 transform -translate-y-1/2 right-2 top-1/2"
+                      className="absolute text-gray-600 transform -translate-y-1/2 right-3 top-1/2"
                     >
-                      {passwordVisible ? "Hide" : "Show"} {/* Button text */}
+                      {passwordVisible ? "Hide" : "Show"}
                     </button>
                   </div>
                 </div>
               </>
             )}
-
-            <div className="flex justify-end gap-3">
-              <button onClick={closeModal} className="px-4 py-2 bg-gray-300 rounded">
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
+              >
                 Cancel
               </button>
-              {modalType === "role" && (
-                <button
-                  onClick={confirmRoleChange}
-                  className="px-4 py-2 text-white bg-blue-600 rounded"
-                >
-                  Confirm
-                </button>
-              )}
-              {modalType === "delete" && (
-                <button
-                  onClick={confirmDelete}
-                  className="px-4 py-2 text-white bg-red-600 rounded"
-                >
-                  Confirm
-                </button>
-              )}
-              {modalType === "edit" && (
-                <button
-                  onClick={updateUserDetails}
-                  className="px-4 py-2 text-white bg-green-600 rounded"
-                >
-                  Save Changes
-                </button>
-              )}
+              <button
+                onClick={modalType === "role" ? confirmRoleChange : modalType === "delete" ? confirmDelete : updateUserDetails}
+                className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+              >
+                Confirm
+              </button>
             </div>
           </div>
         </div>
@@ -382,4 +333,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default withAuth(AdminDashboard);

@@ -1,15 +1,22 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+// Constants for static pages and revalidation interval
+export const dynamic = "force-static";
+export const revalidate = 60;
 
-export const dynamic = "force-static"; // for static pages
-export const revalidate = 60; // to specify revalidation interval
+// Helper function to connect to the database
+const connectToDatabase = async () => {
+  const client = await clientPromise;
+  return client.db("cloud");
+};
 
-
+// POST: Delete a user by email
 export async function POST(req) {
   try {
     const { email } = await req.json();
 
+    // Input validation
     if (!email) {
       return NextResponse.json(
         { message: "Email is required to delete a user" },
@@ -17,8 +24,7 @@ export async function POST(req) {
       );
     }
 
-    const client = await clientPromise;
-    const db = client.db("cloud");
+    const db = await connectToDatabase();
 
     // Delete the user
     const result = await db.collection("users").deleteOne({ email });

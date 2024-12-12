@@ -1,33 +1,36 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
-// Reusable MongoClient instance
+// Use environment variables for sensitive information
 const client = new MongoClient(
   'mongodb+srv://cloud:AEl0OZPk34Yy8891@cluster0.q0opr.mongodb.net/',
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
+// Caching the database connection
+let dbInstance = null;
 
-export const dynamic = "force-static"; // for static pages
-export const revalidate = 60; // to specify revalidation interval
-
-
-// Ensure the client is connected
-async function connectToDatabase() {
-  if (!client.isConnected) {
+const connectToDatabase = async () => {
+  if (dbInstance) return dbInstance; // Return cached dbInstance
+  try {
     await client.connect();
+    dbInstance = client.db("cloud");
+    return dbInstance;
+  } catch (error) {
+    console.error("Database connection failed:", error);
+    throw new Error("Database connection error");
   }
-  return client.db("cloud");
-}
+};
 
 // POST: Add a new link
 export async function POST(request) {
   try {
     const { link, siteLink, siteReview, email } = await request.json();
 
-    // if (!email) {
-    //   return NextResponse.json({ message: "User not authenticated" }, { status: 401 });
-    // }
+    // Input validation
+    if (!link || !siteLink || !siteReview || !email) {
+      return NextResponse.json({ message: "All fields are required" }, { status: 400 });
+    }
 
     const db = await connectToDatabase();
     const linksCollection = db.collection("links");
@@ -41,12 +44,10 @@ export async function POST(request) {
     };
 
     const result = await linksCollection.insertOne(newLink);
+    return result.acknowledged
+      ? NextResponse.json({ message: "Link successfully generated" })
+      : NextResponse.json({ message: "Failed to generate the link" }, { status: 500 });
 
-    if (result.acknowledged) {
-      return NextResponse.json({ message: "Link successfully generated" });
-    } else {
-      return NextResponse.json({ message: "Failed to generate the link" }, { status: 500 });
-    }
   } catch (error) {
     console.error("Error adding link:", error);
     return NextResponse.json({ message: "Server error", error: error.message }, { status: 500 });
@@ -60,14 +61,11 @@ export async function GET() {
     const linksCollection = db.collection("links");
 
     const links = await linksCollection.find({}).toArray();
-
     return NextResponse.json(links, { status: 200 });
+
   } catch (error) {
     console.error("Error fetching links:", error);
-    return NextResponse.json(
-      { message: "Error fetching links", error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error fetching links", error: error.message }, { status: 500 });
   }
 }
 
@@ -76,6 +74,7 @@ export async function DELETE(request) {
   try {
     const { id } = await request.json();
 
+    // Input validation
     if (!id) {
       return NextResponse.json({ message: "ID is required for deletion" }, { status: 400 });
     }
@@ -85,19 +84,12 @@ export async function DELETE(request) {
 
     const result = await linksCollection.deleteOne({ _id: new ObjectId(id) });
 
-    if (result.deletedCount === 0) {
-      return NextResponse.json(
-        { message: "No document found with the provided ID" },
-        { status: 404 }
-      );
-    }
+    return result.deletedCount === 0
+      ? NextResponse.json({ message: "No document found with the provided ID" }, { status: 404 })
+      : NextResponse.json({ message: "Link deleted successfully" }, { status: 200 });
 
-    return NextResponse.json({ message: "Link deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Error deleting link:", error);
-    return NextResponse.json(
-      { message: "Error deleting link", error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Error deleting link", error: error.message }, { status: 500 });
   }
 }

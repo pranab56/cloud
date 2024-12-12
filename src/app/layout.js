@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Head from "next/head";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -14,24 +15,27 @@ const geistMono = localFont({
 });
 
 export const metadata = {
-  title: "Cloud",
+  title: "Narpbd",
   description: "Welcome Our Cloud project",
   keywords: [
-    "next.js",
-    "cloud",
-    "cloud-nine",
-    "cloud project fast",
-    "SEO",
-    "Google ranking",
+    "narpbd.com",
+    "narp",
+    "narpbd",
+    "nrpbd",
+    "nrp",
+    "nrpbd.",
   ],
   verification: {
-    google: "NzQwnFDQb9bghCJFHR4OwCR07T8HG5rRWlhIfjF31D4",
+    // google: "NzQwnFDQb9bghCJFHR4OwCR07T8HG5rRWlhIfjF31D4",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <Head>
+      <link rel="preload" href="/fonts/myfont.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+      </Head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

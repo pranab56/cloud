@@ -1,20 +1,29 @@
 import { MongoClient } from 'mongodb';
 
+// MongoDB connection URI
 const uri = 'mongodb+srv://cloud:AEl0OZPk34Yy8891@cluster0.q0opr.mongodb.net/';
 const client = new MongoClient(uri);
 
-// In your API route file (e.g., /app/api/mega_login/route.js)
+// Ensure the MongoClient connects only once for better performance
+let isConnected = false;
 export const dynamic = "force-static"; // for static pages
 export const revalidate = 60; // to specify revalidation interval
 
-
+// Function to handle database connection
 async function connectToDatabase() {
-  if (!client.topology || !client.topology.isConnected()) {
-    await client.connect();
+  if (!isConnected) {
+    try {
+      await client.connect();
+      isConnected = true;
+    } catch (error) {
+      console.error('Error connecting to MongoDB:', error.message);
+      throw new Error('Failed to connect to database');
+    }
   }
-  return client.db('cloud'); // Replace with your database name
+  return client.db('cloud'); // Use the 'cloud' database (or replace with your actual DB name)
 }
 
+// GET API route to fetch all documents from 'mega_personal_login' collection
 export async function GET() {
   try {
     const db = await connectToDatabase();
@@ -24,18 +33,16 @@ export async function GET() {
     const documents = await collection.find({}).toArray();
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        data: documents,
-      }),
+      JSON.stringify({ success: true, data: documents }),
       { status: 200 }
     );
   } catch (error) {
-    console.error('Error fetching objects:', error.message);
+    console.error('Error fetching documents:', error.message);
     return new Response(
       JSON.stringify({
         success: false,
-        message: 'Failed to fetch objects from the database.',
+        message: 'Failed to fetch documents from the database.',
+        error: error.message,
       }),
       { status: 500 }
     );

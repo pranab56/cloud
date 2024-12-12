@@ -5,19 +5,25 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next build && next export",
     "start": "next start",
     "lint": "next lint",
     "postbuild": "next-sitemap"
   },
+  "engines": {
+    "node": ">=14.0.0",
+    "next": "15.0.3"
+  },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "axios": "^1.7.8",
-    "cookie": "^1.0.2",
     "crypto": "^1.0.1",
     "date-fns": "^4.1.0",
     "flowbite": "^2.5.2",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "lodash.debounce": "^4.0.8",
     "mongodb": "^6.11.0",
     "next": "15.0.3",
     "next-sitemap": "^4.2.3",
