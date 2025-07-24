@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import useSWR from "swr";
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdContentCopy } from "react-icons/md";
-import { FaRegArrowAltCircleRight } from "react-icons/fa";
 import { formatDistanceToNow } from "date-fns";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaRegArrowAltCircleRight } from "react-icons/fa";
+import { MdContentCopy, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import useSWR from "swr";
 import withAuth from "../utils/auth";
 
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -29,12 +29,16 @@ const ActiveLinksTable = () => {
 
   // SWR data fetching
   const { data: loginData, isLoading: isLoginDataLoading } = useSWR("/api/mega_login", fetcher);
+  // console.log(loginData?.data)
+
   const { data: signupData, isLoading: isSignupDataLoading } = useSWR("/api/auth/signup", fetcher);
   const { data: countsData, isLoading: isCountsDataLoading } = useSWR("/api/get-visit-counts", fetcher);
 
   const loading = isLoginDataLoading || isSignupDataLoading || isCountsDataLoading;
 
   const userDetails = loginData?.data?.filter((value) => value?.logEmail === user) || [];
+
+  console.log(userDetails)
   const userName = signupData?.find((value) => value.email === user) || null;
 
   // Aggregate device counts
@@ -53,6 +57,8 @@ const ActiveLinksTable = () => {
   const totalPages = Math.ceil(userDetails.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = userDetails.slice(startIndex, startIndex + itemsPerPage);
+
+
 
   const handlePageChange = useCallback(
     (page) => {
@@ -77,17 +83,17 @@ const ActiveLinksTable = () => {
       <section className="grid items-center justify-between grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {loading
           ? ["Mobile Click", "Desktop Click", "Tablet Click", "Total Account"].map((_, index) => (
-              <DeviceCountCard key={index} loading={true} />
-            ))
+            <DeviceCountCard key={index} loading={true} />
+          ))
           : ["Mobile Click", "Desktop Click", "Tablet Click", "Total Account"].map((title, index) => (
-              <DeviceCountCard
-                key={index}
-                title={title}
-                count={Object.values(deviceCounts)[index]}
-                color={getColorByIndex(index)}
-                hover={getButtonClass(index)}
-              />
-            ))}
+            <DeviceCountCard
+              key={index}
+              title={title}
+              count={Object.values(deviceCounts)[index]}
+              color={getColorByIndex(index)}
+              hover={getButtonClass(index)}
+            />
+          ))}
       </section>
 
       {/* Data Table */}
