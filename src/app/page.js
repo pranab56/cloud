@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const Page = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -127,9 +127,8 @@ const Page = () => {
 
         <button
           type="submit"
-          className={`text-white font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${
-            loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700 hover:bg-blue-800"
-          }`}
+          className={`text-white font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-700 hover:bg-blue-800"
+            }`}
           disabled={loading}
         >
           {loading ? "Signing in..." : "Sign In"}
