@@ -3,7 +3,7 @@
 import { MongoClient } from "mongodb";
 
 // Load MongoDB URI from environment variable for better security
-const MONGODB_URI = "mongodb+srv://cloud:AEl0OZPk34Yy8891@cluster0.q0opr.mongodb.net/";
+const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error("Please define the MONGODB_URI environment variable.");
