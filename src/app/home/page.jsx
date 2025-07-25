@@ -60,7 +60,7 @@ const ActiveLinksTable = () => {
     isClient && user ? "/api/mega_login" : null,
     fetcher,
     {
-      refreshInterval: 30000,
+      refreshInterval: 1000,
       revalidateOnFocus: true,
     }
   );
@@ -69,7 +69,7 @@ const ActiveLinksTable = () => {
     isClient && user ? "/api/auth/signup" : null,
     fetcher,
     {
-      refreshInterval: 30000,
+      refreshInterval: 1000,
       revalidateOnFocus: true,
     }
   );
@@ -78,7 +78,7 @@ const ActiveLinksTable = () => {
     isClient && user ? "/api/get-visit-counts" : null,
     fetcher,
     {
-      refreshInterval: 30000,
+      refreshInterval: 1000,
       revalidateOnFocus: true,
     }
   );
