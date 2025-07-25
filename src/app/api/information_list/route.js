@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import clientPromise from '@/lib/mongodb'; // Assuming this is a reusable DB client for connection pooling
 
 // Force dynamic behavior (no static export)
-export const dynamic = "force-static"; // for static pages
+export const dynamic = "force-dynamic"; // for static pages
 export const revalidate = 60; // to specify revalidation interval
 
 // GET: Fetch all records from mega_personal_login collection

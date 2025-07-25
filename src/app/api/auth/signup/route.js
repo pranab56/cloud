@@ -1,6 +1,6 @@
 import clientPromise from "@/lib/mongodb";
 
-export const dynamic = "force-static"; // for static pages
+export const dynamic = "force-dynamic"; // for static pages
 export const revalidate = 60; // revalidation interval
 
 // Helper function to handle DB connection

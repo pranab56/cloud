@@ -1,7 +1,7 @@
 import clientPromise from '@/lib/mongodb'; // Assuming clientPromise is a reusable DB client
 
 // Force dynamic behavior (no static export)
-export const dynamic = "force-static"; // for static pages
+export const dynamic = "force-dynamic"; // for static pages
 export const revalidate = 60; // to specify revalidation interval
 
 // GET: Fetch visit counts

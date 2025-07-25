@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export const dynamic = "force-static"; // for static pages
+export const dynamic = "force-dynamic"; // for static pages
 export const revalidate = 60; // to specify revalidation interval
 
 // Helper function to connect to the database

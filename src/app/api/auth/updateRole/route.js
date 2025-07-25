@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-static"; // for static pages
+export const dynamic = "force-dynamic"; // for static pages
 export const revalidate = 60; // specify revalidation interval
 
 export async function POST(req) {

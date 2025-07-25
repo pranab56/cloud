@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "export": "next build && next export",
-    "start": "next start",
+    "start": "next start -p 3001",
     "lint": "next lint",
     "postbuild": "next-sitemap"
   },
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "axios": "^1.7.8",
+    "axios": "^1.11.0",
     "crypto": "^1.0.1",
     "date-fns": "^4.1.0",
     "flowbite": "^2.5.2",

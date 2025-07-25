@@ -10,37 +10,18 @@ import { MdContentCopy, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-
 import useSWR from "swr";
 import withAuth from "../utils/auth";
 
-// Enhanced fetcher with proper timeout and error handling
 const fetcher = async (url) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout (increased from 50ms)
-
   try {
     const res = await fetch(url, {
-      signal: controller.signal,
       cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
     });
 
-    clearTimeout(timeoutId);
-
     if (!res.ok) {
-      const errorText = await res.text();
-      const error = new Error(`HTTP ${res.status}: ${res.statusText}`);
-      error.info = errorText;
-      error.status = res.status;
-      throw error;
+      throw new Error(`Failed to fetch: ${res.status}`);
     }
     return res.json();
   } catch (error) {
-    clearTimeout(timeoutId);
-    if (error.name === 'AbortError') {
-      throw new Error('Request timeout');
-    }
+    console.error('Fetch error:', error);
     throw error;
   }
 };
@@ -53,17 +34,14 @@ const ActiveLinksTable = () => {
   const [isClient, setIsClient] = useState(false);
   const mountedRef = useRef(true);
 
-  // Handle client-side mounting
   useEffect(() => {
     setIsClient(true);
     mountedRef.current = true;
-
     return () => {
       mountedRef.current = false;
     };
   }, []);
 
-  // Get user from localStorage with proper error handling
   useEffect(() => {
     if (!isClient || !mountedRef.current) return;
 
@@ -78,48 +56,41 @@ const ActiveLinksTable = () => {
     }
   }, [isClient, user]);
 
-  // SWR configuration with reasonable intervals
-  const swrConfig = useMemo(() => ({
-    refreshInterval: 30000, // 30 seconds (was 50ms - too aggressive)
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-    shouldRetryOnError: true,
-    errorRetryInterval: 5000, // 5 seconds (was 50ms)
-    errorRetryCount: 3,
-    dedupingInterval: 10000, // Prevent duplicate requests for 10 seconds
-    focusThrottleInterval: 5000, // Throttle focus revalidation
-  }), []);
-
-  // SWR data fetching with conditional fetching
-  const shouldFetch = isClient && user && mountedRef.current;
-
   const { data: loginData, isLoading: isLoginDataLoading, error: loginError, mutate: mutateLogin } = useSWR(
-    shouldFetch ? "/api/mega_login" : null,
+    isClient && user ? "/api/mega_login" : null,
     fetcher,
-    swrConfig
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    }
   );
 
   const { data: signupData, isLoading: isSignupDataLoading, error: signupError, mutate: mutateSignup } = useSWR(
-    shouldFetch ? "/api/auth/signup" : null,
+    isClient && user ? "/api/auth/signup" : null,
     fetcher,
-    swrConfig
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    }
   );
 
   const { data: countsData, isLoading: isCountsDataLoading, error: countsError, mutate: mutateCounts } = useSWR(
-    shouldFetch ? "/api/get-visit-counts" : null,
+    isClient && user ? "/api/get-visit-counts" : null,
     fetcher,
-    swrConfig
+    {
+      refreshInterval: 30000,
+      revalidateOnFocus: true,
+    }
   );
 
   const loading = !isClient || isLoginDataLoading || isSignupDataLoading || isCountsDataLoading;
 
-  // Memoized data processing with error handling
   const userDetails = useMemo(() => {
-    if (!loginData?.data || !user || !Array.isArray(loginData.data)) {
-      return [];
-    }
+    if (!loginData?.data) return [];
     try {
-      return loginData.data.filter((value) => value?.logEmail === user) || [];
+      return Array.isArray(loginData.data)
+        ? loginData.data.filter((value) => value?.logEmail === user)
+        : [];
     } catch (error) {
       console.error('Error processing user details:', error);
       return [];
@@ -136,11 +107,11 @@ const ActiveLinksTable = () => {
   }, [userDetails]);
 
   const userName = useMemo(() => {
-    if (!signupData || !user || !Array.isArray(signupData)) {
-      return null;
-    }
+    if (!signupData) return null;
     try {
-      return signupData.find((value) => value?.email === user) || null;
+      return Array.isArray(signupData)
+        ? signupData.find((value) => value?.email === user)
+        : null;
     } catch (error) {
       console.error('Error finding user name:', error);
       return null;
@@ -150,12 +121,11 @@ const ActiveLinksTable = () => {
   const deviceCounts = useMemo(() => {
     const defaultCounts = { mobile: 0, desktop: 0, tablet: 0, total: 0 };
 
-    if (!countsData || !user || !Array.isArray(countsData)) {
-      return defaultCounts;
-    }
+    if (!countsData) return defaultCounts;
 
     try {
-      return countsData
+      const dataArray = Array.isArray(countsData) ? countsData : [];
+      return dataArray
         .filter((value) => value?.email === user)
         .reduce(
           (acc, item) => {
@@ -177,7 +147,6 @@ const ActiveLinksTable = () => {
     }
   }, [countsData, user]);
 
-  // Pagination logic with bounds checking
   const totalPages = Math.max(1, Math.ceil(reversedUserDetails.length / itemsPerPage));
   const safeCurrentPage = Math.min(currentPage, totalPages);
   const startIndex = (safeCurrentPage - 1) * itemsPerPage;
@@ -204,24 +173,13 @@ const ActiveLinksTable = () => {
         await navigator.clipboard.writeText(value);
         toast.success(`Copied: ${value}`);
       } else {
-        // Fallback for browsers without clipboard API
         const textArea = document.createElement('textarea');
         textArea.value = value;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
-        textArea.style.top = '-999999px';
         document.body.appendChild(textArea);
-        textArea.focus();
         textArea.select();
-
-        const successful = document.execCommand('copy');
+        document.execCommand('copy');
         document.body.removeChild(textArea);
-
-        if (successful) {
-          toast.success(`Copied: ${value}`);
-        } else {
-          throw new Error('Copy command failed');
-        }
+        toast.success(`Copied: ${value}`);
       }
     } catch (err) {
       console.error('Clipboard error:', err);
@@ -229,19 +187,17 @@ const ActiveLinksTable = () => {
     }
   }, []);
 
-  // Error handling with retry functionality
   useEffect(() => {
     if (!mountedRef.current) return;
 
     const handleError = (error, type, retryFn) => {
       if (error) {
         console.error(`${type} error:`, error);
-        const errorMessage = error.message || `Failed to load ${type.toLowerCase()}`;
-        toast.error(errorMessage, {
+        toast.error(`Failed to load ${type.toLowerCase()} data`, {
           duration: 4000,
-          action: {
+          action: retryFn && {
             label: 'Retry',
-            onClick: () => retryFn && retryFn()
+            onClick: () => retryFn()
           }
         });
       }
@@ -252,14 +208,12 @@ const ActiveLinksTable = () => {
     handleError(countsError, 'Device counts', mutateCounts);
   }, [loginError, signupError, countsError, mutateLogin, mutateSignup, mutateCounts]);
 
-  // Reset page when data changes
   useEffect(() => {
     if (reversedUserDetails.length > 0 && currentPage > totalPages) {
       setCurrentPage(1);
     }
   }, [reversedUserDetails.length, currentPage, totalPages]);
 
-  // Don't render anything until client-side
   if (!isClient) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -272,7 +226,6 @@ const ActiveLinksTable = () => {
     <div className="p-4">
       <h3 className="pb-5 text-2xl font-normal text-gray-800">Dashboard</h3>
 
-      {/* Device Counts Section */}
       <section className="grid items-center justify-between grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {loading
           ? Array(4).fill(0).map((_, index) => (
@@ -294,7 +247,6 @@ const ActiveLinksTable = () => {
           ))}
       </section>
 
-      {/* Data Table */}
       <div className="pt-10 overflow-x-auto rounded shadow-lg">
         <Table
           loading={loading}
@@ -305,7 +257,6 @@ const ActiveLinksTable = () => {
         />
       </div>
 
-      {/* Pagination */}
       {!loading && currentItems.length > 0 && totalPages > 1 && (
         <Pagination
           currentPage={safeCurrentPage}
@@ -317,7 +268,6 @@ const ActiveLinksTable = () => {
   );
 };
 
-// Helper Components
 const DeviceCountCard = ({ loading, title, count, color, hover }) => (
   <div className="w-full">
     <div className={`flex justify-between rounded-md ${loading ? 'bg-gray-200 animate-pulse h-40' : color}`}>
@@ -436,8 +386,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
     <button
       onClick={() => onPageChange(currentPage - 1)}
       className={`flex items-center justify-center p-2 rounded transition-colors duration-200 ${currentPage === 1
-          ? "cursor-not-allowed bg-gray-200 text-gray-500"
-          : "bg-blue-500 hover:bg-blue-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        ? "cursor-not-allowed bg-gray-200 text-gray-500"
+        : "bg-blue-500 hover:bg-blue-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         }`}
       disabled={currentPage === 1}
       aria-label="Previous page"
@@ -452,8 +402,8 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
     <button
       onClick={() => onPageChange(currentPage + 1)}
       className={`flex items-center justify-center p-2 rounded transition-colors duration-200 ${currentPage === totalPages
-          ? "cursor-not-allowed bg-gray-200 text-gray-500"
-          : "bg-blue-500 hover:bg-blue-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+        ? "cursor-not-allowed bg-gray-200 text-gray-500"
+        : "bg-blue-500 hover:bg-blue-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
         }`}
       disabled={currentPage === totalPages}
       aria-label="Next page"
@@ -463,7 +413,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
   </div>
 );
 
-// Helper functions
 const getColorByIndex = (index) => {
   const colors = ["bg-cyan-600", "bg-green-600", "bg-yellow-500", "bg-red-600"];
   return colors[index % colors.length];
