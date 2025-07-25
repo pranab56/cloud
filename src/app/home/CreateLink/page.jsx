@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
+import withAuth from "@/app/utils/auth";
 import axios from "axios";
-import withAuth, { useAuthRedirect } from "@/app/utils/auth";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 
 // Loader Component
 const Loader = () => (

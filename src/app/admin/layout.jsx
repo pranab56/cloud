@@ -1,19 +1,28 @@
 'use client';
-import { useEffect, useState, useMemo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from "next/link";
-import { MdDashboard, MdLogout } from "react-icons/md";
-import { FaList, FaHistory, FaUnlink } from "react-icons/fa";
-import { RiMenuUnfold3Line } from "react-icons/ri";
 import Image from 'next/image';
+import Link from "next/link";
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { FaHistory, FaList, FaUnlink } from "react-icons/fa";
+import { MdDashboard, MdLogout } from "react-icons/md";
+import { RiMenuUnfold3Line } from "react-icons/ri";
 import useSWR from 'swr';
 
 const SidebarLink = ({ href, icon: Icon, label, isActive, onClick }) => (
-  <Link href={href} prefetch={true} onClick={onClick} aria-current={isActive ? "page" : undefined}>
-    <h3 className={`flex items-center p-2 rounded-lg ${isActive ? "bg-green-500 text-white" : "text-white"} dark:text-white hover:text-black hover:bg-white transition-all duration-500 hover:scale-100 dark:hover:bg-gray-700 group`}>
-      <span className="text-xl"><Icon /></span>
-      <span className="font-medium ms-3">{label}</span>
-    </h3>
+  <Link 
+    href={href} 
+    prefetch={process.env.NODE_ENV === 'production'} // Only prefetch in production
+    onClick={(e) => {
+      if (onClick) {
+        e.preventDefault();
+        onClick();
+      }
+    }} 
+    aria-current={isActive ? "page" : undefined}
+    className={`flex items-center p-2 rounded-lg ${isActive ? "bg-green-500 text-white" : "text-white"} dark:text-white hover:text-black hover:bg-white transition-all duration-500 hover:scale-100 dark:hover:bg-gray-700 group`}
+  >
+    <span className="text-xl"><Icon /></span>
+    <span className="font-medium ms-3">{label}</span>
   </Link>
 );
 
@@ -23,12 +32,31 @@ const Sidebar = ({ children }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [loginUser, setLoginUser] = useState(null);
   const [userName, setUserName] = useState(null);
+  const [isClient, setIsClient] = useState(false);
 
-  const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data: name, isLoading } = useSWR("/api/auth/signup", fetcher, { refreshInterval: 1000 });
+  const fetcher = async (url) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      const error = new Error('An error occurred while fetching the data.');
+      error.info = await res.json();
+      error.status = res.status;
+      throw error;
+    }
+    return res.json();
+  };
+
+  const { data: name, isLoading, error } = useSWR(
+    isClient ? "/api/auth/signup" : null, 
+    fetcher, 
+    { 
+      refreshInterval: 1000,
+      revalidateOnFocus: false // Reduce unnecessary requests in production
+    }
+  );
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    setIsClient(true);
+    if (typeof window !== 'undefined') {
       const user = localStorage.getItem('login_user');
       setLoginUser(user);
     }
@@ -42,14 +70,24 @@ const Sidebar = ({ children }) => {
   }, [name, loginUser]);
 
   const toggleSidebar = () => setIsCollapsed(prev => !prev);
+  
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', { method: 'POST' });
+      const response = await fetch('/api/auth/logout', { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
       if (response.ok) {
-        localStorage.removeItem('login_user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('login_user');
+        }
         router.push('/');
+        router.refresh(); // Ensure page refresh in production
       } else {
-        console.error('Failed to log out');
+        console.error('Failed to log out:', await response.text());
       }
     } catch (error) {
       console.error('Error logging out:', error);
@@ -57,6 +95,10 @@ const Sidebar = ({ children }) => {
   };
 
   const isActive = useMemo(() => (route) => pathname === route, [pathname]);
+
+  if (!isClient) {
+    return null; // Or return a loading skeleton
+  }
 
   return (
     <div className="flex">
@@ -73,7 +115,13 @@ const Sidebar = ({ children }) => {
           <ul className="flex flex-col gap-1 font-normal">
             <li className='border-b'>
               <span className='flex justify-center'>
-                <Image src={'/images/light_prev_ui.png'} height={10} width={100} alt='cloud logo' />
+                <Image 
+                  src={'/images/light_prev_ui.png'} 
+                  height={10} 
+                  width={100} 
+                  alt='cloud logo' 
+                  priority // Important for production images
+                />
               </span>
             </li>
             <li>
@@ -86,7 +134,7 @@ const Sidebar = ({ children }) => {
             <SidebarLink href="/admin/add_user" icon={FaList} label="Add User" isActive={isActive("/admin/add_user")} />
             <SidebarLink href="/admin/website_list" icon={FaHistory} label="Website List" isActive={isActive("/admin/website_list")} />
             <SidebarLink href="/admin/informations_list" icon={FaUnlink} label="Information List" isActive={isActive("/admin/informations_list")} />
-            <SidebarLink href="" icon={MdLogout} label="Log Out" onClick={handleLogout} isActive={isActive("/home/logout")} />
+            <SidebarLink href="" icon={MdLogout} label="Log Out" onClick={handleLogout} isActive={false} />
           </ul>
         </div>
         <div className="absolute top-0 right-0 w-2 h-full bg-gray-700 cursor-col-resize hover:bg-gray-500" />
@@ -97,7 +145,7 @@ const Sidebar = ({ children }) => {
           <span onClick={toggleSidebar} className='text-2xl cursor-pointer'>
             <RiMenuUnfold3Line />
           </span>
-          {pathname.slice(6) === "" ? "Admin Dashboard" : pathname.slice(7)}
+          {pathname?.slice(6) === "" ? "Admin Dashboard" : pathname?.slice(7)}
         </div>
         {children}
       </div>

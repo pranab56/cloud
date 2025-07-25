@@ -1,37 +1,38 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
-import { formatDistanceToNow } from "date-fns";
-import { MdKeyboardArrowRight, MdKeyboardArrowLeft, MdContentCopy, MdDelete } from "react-icons/md";
-import useSWR from "swr";
-import { toast } from "react-hot-toast";
 import withAuth from "@/app/utils/auth";
+import { formatDistanceToNow } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-hot-toast";
+import { MdContentCopy, MdDelete, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-icons/md";
+import useSWR from "swr";
 
-// TableRow Component
 const TableRow = ({ link, index, currentPage, copyToClipboard, setLinkToDelete, setIsDeleteModalOpen }) => (
   <tr className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}>
     <td className="px-4 py-2 border border-gray-300">{(currentPage - 1) * 10 + index + 1}</td>
     <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
     <td className="px-4 py-2 border border-gray-300">
       <div className="flex items-center">
-        <input 
-          type="text" 
-          value={`${link.siteLink}${link.link}`} 
+        <input
+          type="text"
+          value={`${link.siteLink}${link.link}`}
           className="w-7/12 p-1 mr-2 border border-black rounded"
-          readOnly 
+          readOnly
           aria-label="Link to site"
         />
-        <a 
-          href={`${link.siteLink}${link.link}`} 
-          className="text-blue-500 underline" 
-          target="_blank" 
+        {/* <a
+          href={`${link.siteLink}${link.link}`}
+          className="text-blue-500 underline"
+          target="_blank"
           rel="noopener noreferrer"
           aria-label={`Open ${link.siteReview}`}
-        />
+        >
+          Open
+        </a> */}
       </div>
     </td>
     <td className="px-4 py-2 text-center border border-gray-300">
-      <button 
-        onClick={() => copyToClipboard(`${link.siteLink}${link.link}`)} 
+      <button
+        onClick={() => copyToClipboard(`${link.siteLink}${link.link}`)}
         className="p-2 text-white bg-green-500 rounded hover:bg-green-600"
         aria-label="Copy link to clipboard"
       >
@@ -42,8 +43,8 @@ const TableRow = ({ link, index, currentPage, copyToClipboard, setLinkToDelete, 
       {formatDistanceToNow(new Date(link.createdAt), { addSuffix: true })}
     </td>
     <td className="px-4 py-2 text-center border border-gray-300">
-      <button 
-        onClick={() => { setLinkToDelete(link._id); setIsDeleteModalOpen(true); }} 
+      <button
+        onClick={() => { setLinkToDelete(link._id); setIsDeleteModalOpen(true); }}
         className="p-2 text-white bg-red-500 rounded hover:bg-red-600"
         aria-label="Delete link"
       >
@@ -53,7 +54,6 @@ const TableRow = ({ link, index, currentPage, copyToClipboard, setLinkToDelete, 
   </tr>
 );
 
-// Pagination Component
 const Pagination = ({ currentPage, totalPages, onPageChange }) => (
   <div className="flex items-center gap-4 mt-4">
     <button
@@ -89,7 +89,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
   </div>
 );
 
-// Delete Modal Component
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => (
   isOpen && (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -104,7 +103,6 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => (
   )
 );
 
-// Main ActiveLinksTable Component
 const ActiveLinksTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: "id", direction: "ascending" });
@@ -117,20 +115,27 @@ const ActiveLinksTable = () => {
   const { data, error, isLoading } = useSWR("/api/addLink", fetcher, { refreshInterval: 1000 });
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("login_user");
-    if (storedUser) setLoginUser(storedUser);
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem("login_user");
+      if (storedUser) setLoginUser(storedUser);
+    }
   }, []);
 
   const filteredWebsiteList = useMemo(() => {
-    if (loginUser && data) {
-      return data.filter((link) => link.email === loginUser);
-    }
-    return [];
+    if (!data || !loginUser) return [];
+    return data.filter((link) => link.email === loginUser) || [];
   }, [data, loginUser]);
 
-  const sortedData = filteredWebsiteList.sort((a, b) => sortData(a, b, sortConfig));
+  const sortedData = useMemo(() => {
+    if (!filteredWebsiteList.length) return [];
+    return [...filteredWebsiteList].sort((a, b) => sortData(a, b, sortConfig));
+  }, [filteredWebsiteList, sortConfig]);
+
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
-  const currentItems = sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const currentItems = useMemo(() => {
+    return sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  }, [sortedData, currentPage, itemsPerPage]);
 
   const handleSort = (key) => {
     const direction = sortConfig.direction === "ascending" ? "descending" : "ascending";
@@ -138,7 +143,13 @@ const ActiveLinksTable = () => {
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text).then(() => toast.success("Link copied to clipboard!"));
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+        .then(() => toast.success("Link copied to clipboard!"))
+        .catch(() => toast.error("Failed to copy link"));
+    } else {
+      toast.error("Clipboard access not available");
+    }
   };
 
   const deleteLink = async () => {
@@ -153,8 +164,9 @@ const ActiveLinksTable = () => {
 
       toast.success("Link deleted successfully!");
       setIsDeleteModalOpen(false);
-    } catch {
+    } catch (err) {
       toast.error("Error deleting link");
+      console.error("Delete error:", err);
     }
   };
 
@@ -177,8 +189,8 @@ const ActiveLinksTable = () => {
             {isLoading ? (
               <tr><td colSpan="6" className="px-4 py-2 text-center text-gray-500">Loading...</td></tr>
             ) : filteredWebsiteList.length ? (
-              currentItems.reverse().map((link, index) => (
-                <TableRow 
+              [...currentItems].reverse().map((link, index) => (
+                <TableRow
                   key={link._id}
                   link={link}
                   index={index}
@@ -195,7 +207,7 @@ const ActiveLinksTable = () => {
         </table>
       </div>
 
-      {filteredWebsiteList.length > 0 && (
+      {filteredWebsiteList.length > 0 && totalPages > 1 && (
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       )}
 
@@ -204,16 +216,21 @@ const ActiveLinksTable = () => {
   );
 };
 
-// Sorting Function
 const sortData = (a, b, { key, direction }) => {
+  if (!a || !b) return 0;
+
   if (key === "time") {
-    return direction === "ascending" 
-      ? new Date(a.createdAt) - new Date(b.createdAt)
-      : new Date(b.createdAt) - new Date(a.createdAt);
+    const dateA = new Date(a.createdAt || 0);
+    const dateB = new Date(b.createdAt || 0);
+    return direction === "ascending" ? dateA - dateB : dateB - dateA;
   }
-  return direction === "ascending" 
-    ? a[key] > b[key] ? 1 : -1 
-    : a[key] < b[key] ? 1 : -1;
+
+  const valueA = a[key] || "";
+  const valueB = b[key] || "";
+
+  return direction === "ascending"
+    ? valueA.toString().localeCompare(valueB.toString())
+    : valueB.toString().localeCompare(valueA.toString());
 };
 
 export default withAuth(ActiveLinksTable);
