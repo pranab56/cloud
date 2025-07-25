@@ -1,4 +1,6 @@
 "use client";
+
+export const dynamic = "force-dynamic";
 import withAuth from "@/app/utils/auth";
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
@@ -112,7 +114,7 @@ const ActiveLinksTable = () => {
   const itemsPerPage = 10;
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error, isLoading } = useSWR("/api/addLink", fetcher, { refreshInterval: 1000 });
+  const { data, error, isLoading, mutate } = useSWR("/api/addLink", fetcher, { refreshInterval: 1000 });
 
   useEffect(() => {
     // Only run on client side
@@ -133,8 +135,16 @@ const ActiveLinksTable = () => {
   }, [filteredWebsiteList, sortConfig]);
 
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
+
+  // Fixed: Properly reverse the data and handle pagination
   const currentItems = useMemo(() => {
-    return sortedData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+
+    // Create a proper reversed copy without mutating the original array
+    const reversedData = sortedData.slice().reverse();
+
+    return reversedData.slice(startIndex, endIndex);
   }, [sortedData, currentPage, itemsPerPage]);
 
   const handleSort = (key) => {
@@ -164,6 +174,10 @@ const ActiveLinksTable = () => {
 
       toast.success("Link deleted successfully!");
       setIsDeleteModalOpen(false);
+      setLinkToDelete(null);
+
+      // Trigger a refetch of the data
+      mutate();
     } catch (err) {
       toast.error("Error deleting link");
       console.error("Delete error:", err);
@@ -189,7 +203,7 @@ const ActiveLinksTable = () => {
             {isLoading ? (
               <tr><td colSpan="6" className="px-4 py-2 text-center text-gray-500">Loading...</td></tr>
             ) : filteredWebsiteList.length ? (
-              [...currentItems].reverse().map((link, index) => (
+              currentItems.map((link, index) => (
                 <TableRow
                   key={link._id}
                   link={link}
@@ -211,7 +225,14 @@ const ActiveLinksTable = () => {
         <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
       )}
 
-      <DeleteModal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} onConfirm={deleteLink} />
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setLinkToDelete(null);
+        }}
+        onConfirm={deleteLink}
+      />
     </div>
   );
 };

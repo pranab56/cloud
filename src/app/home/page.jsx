@@ -1,5 +1,6 @@
 'use client';
 
+export const dynamic = "force-dynamic";
 import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -9,10 +10,12 @@ import { MdContentCopy, MdKeyboardArrowLeft, MdKeyboardArrowRight } from "react-
 import useSWR from "swr";
 import withAuth from "../utils/auth";
 
+
+
 // Enhanced fetcher with timeout and caching headers
 const fetcher = async (url) => {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+  const timeoutId = setTimeout(() => controller.abort(), 50); // 5s timeout
 
   try {
     const res = await fetch(url, {
@@ -60,7 +63,7 @@ const ActiveLinksTable = () => {
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
     shouldRetryOnError: true,
-    errorRetryInterval: 5000,
+    errorRetryInterval: 50,
     errorRetryCount: 3
   };
 
