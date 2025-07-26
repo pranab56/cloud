@@ -11,8 +11,8 @@ import useSWR from "swr";
 const TableRow = ({ link, index, currentPage, copyToClipboard, setLinkToDelete, setIsDeleteModalOpen }) => (
   <tr className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} hover:bg-gray-200 transition-colors`}>
     <td className="px-4 py-2 border border-gray-300">{(currentPage - 1) * 10 + index + 1}</td>
-    <td className="px-4 py-2 border border-gray-300">{link.siteReview}</td>
-    <td className="px-4 py-2 border border-gray-300">
+    <td className="px-4 py-2 border border-gray-300 w-full">{link.siteReview}</td>
+    <td className="px-4 py-2 border border-gray-300 w-full">
       <div className="flex items-center">
         <input
           type="text"

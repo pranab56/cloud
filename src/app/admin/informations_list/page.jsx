@@ -27,6 +27,9 @@ const AdminDashboard = () => {
     refreshInterval: 1000,
   });
 
+
+  console.log(data)
+
   useEffect(() => {
     if (data && prevUsers.length && data.length > prevUsers.length) {
       playNotificationSound();

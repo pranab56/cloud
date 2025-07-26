@@ -16,6 +16,7 @@ const Sidebar = ({ children }) => {
 
   // State management
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(256);
   const [isDragging, setIsDragging] = useState(false);
   const [loginUser, setLoginUser] = useState(null);
@@ -45,6 +46,22 @@ const Sidebar = ({ children }) => {
     }
   );
 
+  // Check if screen is mobile and set initial sidebar state
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768; // md breakpoint
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsCollapsed(true); // Close sidebar on mobile by default
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Set user data when mounted and fetched
   useEffect(() => {
     setIsMounted(true);
@@ -59,20 +76,25 @@ const Sidebar = ({ children }) => {
     }
   }, [nameData, loginUser]);
 
-  // Sidebar resizing logic with cleanup
+  // Sidebar resizing logic with cleanup (only for desktop)
   const handleMouseMove = useCallback(debounce((e) => {
-    if (isDragging) {
+    if (isDragging && !isMobile) {
       const newWidth = Math.max(200, Math.min(e.clientX, 400));
       setSidebarWidth(newWidth);
     }
-  }, 100), [isDragging]);
+  }, 100), [isDragging, isMobile]);
 
-  const handleMouseDown = useCallback(() => setIsDragging(true), []);
+  const handleMouseDown = useCallback(() => {
+    if (!isMobile) {
+      setIsDragging(true);
+    }
+  }, [isMobile]);
+
   const handleMouseUp = useCallback(() => setIsDragging(false), []);
 
   // Add/remove event listeners for resizing
   useEffect(() => {
-    if (isDragging) {
+    if (isDragging && !isMobile) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
     } else {
@@ -84,12 +106,37 @@ const Sidebar = ({ children }) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  }, [isDragging, handleMouseMove, handleMouseUp, isMobile]);
 
   // Toggle sidebar collapse
   const toggleSidebar = useCallback(() => {
     setIsCollapsed((prev) => !prev);
   }, []);
+
+  // Close sidebar when clicking on nav links (mobile only)
+  const handleNavLinkClick = useCallback(() => {
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
+  }, [isMobile]);
+
+  // Close sidebar when clicking outside (mobile only)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobile && !isCollapsed) {
+        const sidebar = document.getElementById('sidebar');
+        const toggleButton = document.getElementById('sidebar-toggle');
+
+        if (sidebar && !sidebar.contains(event.target) &&
+          toggleButton && !toggleButton.contains(event.target)) {
+          setIsCollapsed(true);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMobile, isCollapsed]);
 
   // Logout logic with enhanced error handling
   const handleLogout = async () => {
@@ -121,18 +168,34 @@ const Sidebar = ({ children }) => {
     return <div className="flex">Loading...</div>;
   }
 
+  const sidebarStyles = isMobile ? {
+    width: isCollapsed ? '0' : '280px',
+    transform: isCollapsed ? 'translateX(-100%)' : 'translateX(0)',
+  } : {
+    width: isCollapsed ? '0' : `${sidebarWidth}px`,
+    minWidth: isCollapsed ? '0' : '200px',
+    opacity: isCollapsed ? '0' : '1',
+  };
+
   return (
-    <div className="flex">
+    <div className="flex relative">
+      {/* Mobile Overlay */}
+      {isMobile && !isCollapsed && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden" />
+      )}
+
       {/* Sidebar */}
       <aside
+        id="sidebar"
         aria-label="Sidebar"
         aria-expanded={!isCollapsed}
-        style={{
-          width: isCollapsed ? '0' : `${sidebarWidth}px`,
-          minWidth: isCollapsed ? '0' : '200px',
-          opacity: isCollapsed ? '0' : '1',
-        }}
-        className="relative h-screen overflow-hidden transition-all duration-300 ease-in-out bg-slate-900 dark:bg-gray-800"
+        style={sidebarStyles}
+        className={`
+          ${isMobile ? 'fixed' : 'relative'} 
+          h-screen overflow-hidden transition-all duration-300 ease-in-out 
+          bg-slate-900 dark:bg-gray-800
+          ${isMobile ? 'z-50 left-0 top-0' : ''}
+        `}
       >
         <div className="h-full px-3 py-5 overflow-y-auto">
           <ul className="flex flex-col gap-1 font-normal">
@@ -160,6 +223,7 @@ const Sidebar = ({ children }) => {
               label="Dashboard"
               isActive={isActive("/home")}
               isCollapsed={isCollapsed}
+              onClick={handleNavLinkClick}
             />
 
             <NavLink
@@ -168,6 +232,7 @@ const Sidebar = ({ children }) => {
               label="Website List"
               isActive={isActive("/home/websiteList")}
               isCollapsed={isCollapsed}
+              onClick={handleNavLinkClick}
             />
 
             <NavLink
@@ -176,6 +241,7 @@ const Sidebar = ({ children }) => {
               label="Click History"
               isActive={isActive("/home/ClickHistory")}
               isCollapsed={isCollapsed}
+              onClick={handleNavLinkClick}
             />
 
             <NavLink
@@ -184,11 +250,15 @@ const Sidebar = ({ children }) => {
               label="Create Link"
               isActive={isActive("/home/CreateLink")}
               isCollapsed={isCollapsed}
+              onClick={handleNavLinkClick}
             />
 
             <li>
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  handleLogout();
+                  handleNavLinkClick();
+                }}
                 className={`w-full flex items-center p-2 rounded-lg text-white hover:text-black hover:bg-white dark:hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}
               >
                 <MdLogout className="text-xl" />
@@ -198,19 +268,22 @@ const Sidebar = ({ children }) => {
           </ul>
         </div>
 
-        {/* Resizing handle */}
-        <div
-          onMouseDown={handleMouseDown}
-          className="absolute top-0 right-0 w-2 h-full bg-gray-700 cursor-col-resize hover:bg-gray-500"
-        />
+        {/* Resizing handle (only show on desktop) */}
+        {!isMobile && (
+          <div
+            onMouseDown={handleMouseDown}
+            className="absolute top-0 right-0 w-2 h-full bg-gray-700 cursor-col-resize hover:bg-gray-500"
+          />
+        )}
       </aside>
 
       {/* Main content */}
       <div className="flex-1 bg-[#f4f6f9] h-screen overflow-auto">
         <div className="flex items-center gap-3 p-4 bg-white shadow-lg sticky top-0 z-10">
           <button
+            id="sidebar-toggle"
             onClick={toggleSidebar}
-            className="text-2xl cursor-pointer"
+            className="text-2xl cursor-pointer hover:bg-gray-100 p-1 rounded"
             aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             <RiMenuUnfold3Line />
@@ -227,11 +300,12 @@ const Sidebar = ({ children }) => {
   );
 };
 
-// Extracted NavLink component for better reusability and performance
-const NavLink = ({ href, icon, label, isActive, isCollapsed }) => (
+// Enhanced NavLink component with mobile support
+const NavLink = ({ href, icon, label, isActive, isCollapsed, onClick }) => (
   <li>
     <Link href={href} passHref legacyBehavior>
       <a
+        onClick={onClick}
         className={`flex items-center p-2 rounded-lg ${isActive ? "bg-green-500 text-white" : "text-white"} hover:text-black hover:bg-white dark:hover:bg-gray-700 ${isCollapsed ? 'justify-center' : ''}`}
       >
         {icon}
